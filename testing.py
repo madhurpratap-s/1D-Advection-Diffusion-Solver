@@ -7,7 +7,7 @@ Created on Sat Mar 15 21:53:56 2025
 
 import pytest
 from math import isclose
-from functions import calculate_discretization
+from functions import calculate_discretization, calculate_accuracy_factors
 
 # Numerical test cases for different configurations
 advection_diffusion_cases = [
@@ -48,15 +48,65 @@ def test_calculate_discretization(params):
 @pytest.mark.parametrize("L, T, nx, nt", [
     (1.0, 0.1, 1, 11),  # nx is less than 2
     (1.0, 0.1, 11, 1),  # nt is less than 2
+    (1.0, 0.1, 0, 0)    # both nx or nt are invalid
 ])
 def test_calculate_discretization_invalid_inputs(L, T, nx, nt):
     """
     Test that calculate_discretization raises a ValueError when nx or nt is less than 2.
     
-    GIVEN: nx or nt less than 2.
+    GIVEN: Invalid nx or nt (less than 2).
     WHEN: The calculate_discretization function is called.
     THEN: A ValueError should be raised.
     
     """
     with pytest.raises(ValueError):
         calculate_discretization(L, T, nx, nt)
+        
+@pytest.mark.parametrize("params", advection_diffusion_cases)
+def test_calculate_accuracy_factors(params):
+    """
+    Test that calculate_accuracy_factors computes the correct accuracy factors.
+    
+    GIVEN: A set of parameters for domain length, total time, discretization sizes, diffusivity, and velocity.
+    WHEN: The calculate_accuracy_factors function is called.
+    THEN: The computed r_diff and r_adv should match the manually calculated expected values.
+    
+    """
+    L = params["L"]
+    T = params["T"]
+    nx = params["nx"]
+    nt = params["nt"]
+    D = params["D"]
+    velocity = params["velocity"]
+    
+    dx_expected = L / (nx - 1)
+    dt_expected = T / (nt - 1)
+    
+    # Compute expected accuracy factors
+    r_diff_expected = D * dt_expected / dx_expected**2
+    r_adv_expected = velocity * dt_expected / dx_expected
+    
+    # Get the actual factors from the function
+    r_diff, r_adv = calculate_accuracy_factors(L, T, nx, nt, D, velocity)
+    
+    assert isclose(r_diff, r_diff_expected, rel_tol=1e-9), \
+        f"Diffusion factor mismatch: expected {r_diff_expected}, got {r_diff}"
+    assert isclose(r_adv, r_adv_expected, rel_tol=1e-9), \
+        f"Advection factor mismatch: expected {r_adv_expected}, got {r_adv}"
+
+@pytest.mark.parametrize("L, T, nx, nt, D, velocity", [
+    (1.0, 0.1, 1, 11, 0.01, 0.5), # nx is less than 2
+    (1.0, 0.1, 11, 1, 0.01, 0.5),  # nt is less than 2
+    (1.0, 0.1, 0, 0, 0.01, 0.5), # both nx and nt are invalid
+])
+def test_calculate_accuracy_factors_invalid_inputs(L, T, nx, nt, D, velocity):
+    """
+    Test that calculate_accuracy_factors raises ValueError when invalid nx/nt are passed.
+    
+    GIVEN: Invalid nx or nt (less than 2) along with other valid parameters.
+    WHEN: calculate_accuracy_factors is called.
+    THEN: A ValueError is propagated from calculate_discretization.
+    
+    """
+    with pytest.raises(ValueError):
+        calculate_accuracy_factors(L, T, nx, nt, D, velocity)
