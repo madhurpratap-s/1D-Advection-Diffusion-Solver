@@ -6,6 +6,7 @@ Created on Sat Mar 15 21:52:20 2025
 """
 
 import warnings
+import numpy as np
 
 def calculate_discretization(L, T, nx, nt):
     """
@@ -90,3 +91,27 @@ def check_accuracy_guidelines(L, T, nx, nt, D, velocity):
         warnings.warn(f"Potential accuracy issue: r_diff={r_diff}. Recommended r_diff < 0.5 for accuracy.", UserWarning)
     if r_adv > 1.0:
         warnings.warn(f"Potential accuracy issue: r_adv={r_adv}. Recommended r_adv < 1.0 for accuracy.", UserWarning)
+        
+def setup_gaussian_pulse(L, nx, x0=None, sigma=None):
+    """
+    Generates an initial Gaussian pulse distribution on a 1D grid.
+
+    Args:
+        L (float): Length of the domain.
+        nx (int): Number of spatial steps.
+        x0 (float, optional): Center of the Gaussian pulse. Defaults to L/2.
+        sigma (float, optional): Standard deviation (controls the width of the pulse). 
+                                 Defaults to L/20.
+
+    Returns:
+        numpy.ndarray: Initial concentration profile.
+    """
+    if x0 is None:
+        x0 = L / 2  
+    if sigma is None:
+        sigma = L / 20  
+        
+    dx, dt = calculate_discretization(L, T=1.0, nx=nx, nt=5) # Use dummy T and any nt > 2
+    x = np.linspace(0, (nx - 1) * dx, nx)
+    
+    return np.exp(-0.5 * ((x - x0) / sigma)**2)
