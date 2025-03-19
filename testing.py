@@ -18,9 +18,15 @@ advection_diffusion_cases = [
     {"L": 2.0, "T": 0.5, "D": 0.1, "velocity": 0.0, "nx": 41, "nt": 81},     # diffusion only, medium domain
     {"L": 2.0, "T": 0.5, "D": 0.1, "velocity": 2.0, "nx": 101, "nt": 401},   # high advection, fine grid
     {"L": 3.0, "T": 0.5, "D": 1e-4, "velocity": 1.0, "nx": 151, "nt": 301},  # dominant advection, low diffusion
-    {"L": 5.0, "T": 1.0, "D": 0.5, "velocity": 0.2, "nx": 101, "nt": 401},    # long rod, high diffusion
+    {"L": 5.0, "T": 1.0, "D": 0.5, "velocity": 0.2, "nx": 101, "nt": 401},   # long rod, high diffusion
     {"L": 5.0, "T": 1.0, "D": 0.1, "velocity": 0.5, "nx": 51, "nt": 101},    # long rod, moderate everything
     {"L": 1.0, "T": 0.1, "D": 0.01, "velocity": 0.0, "nx": 11, "nt": 11},    # low resolution baseline
+]
+
+unstable_adv_diffusion_cases = [
+    {"L": 2.0, "T": 0.5, "D": 0.1, "velocity": 2.0, "nx": 101, "nt": 201},  # high advection, fine grid
+    {"L": 5.0, "T": 1.0, "D": 0.5, "velocity": 3.0, "nx": 51, "nt": 101},   # both high diffusion and advection
+    {"L": 1.0, "T": 0.1, "D": 1.0, "velocity": 15.0, "nx": 11, "nt": 11},   # very high diffusion and advection
 ]
 
 @pytest.mark.parametrize("params", advection_diffusion_cases)
@@ -111,3 +117,31 @@ def test_calculate_accuracy_factors_invalid_inputs(L, T, nx, nt, D, velocity):
     """
     with pytest.raises(ValueError):
         calculate_accuracy_factors(L, T, nx, nt, D, velocity)
+        
+@pytest.mark.parametrize("params", advection_diffusion_cases)
+def test_check_accuracy_guidelines_no_warning(params):
+    """
+    Test that check_accuracy_guidelines does not raise a warning for stable configurations for accuracy.
+    
+    GIVEN: A set of numerically stable parameters for the advection-diffusion equation.
+    WHEN: check_accuracy_guidelines is called with these parameters.
+    THEN: No warnings should be raised, indicating stability and accuracy conditions are met.
+    
+    """
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")  
+        check_accuracy_guidelines(**params)
+        
+@pytest.mark.parametrize("params", unstable_adv_diffusion_cases)
+def test_check_accuracy_guidelines_warns(params):
+    """
+    Test that check_accuracy_guidelines raises a warning for unstable configurations.
+    
+    GIVEN: A set of numerically unstable parameters for the advection-diffusion equation.
+    WHEN: check_accuracy_guidelines is called with these parameters.
+    THEN: Warnings should be raised indicating instability and accuracy issues.
+    
+    """
+    with warnings.catch_warnings(record=True):
+        warnings.simplefilter("always")  
+        check_accuracy_guidelines(**params)
