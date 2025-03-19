@@ -5,6 +5,8 @@ Created on Sat Mar 15 21:52:20 2025
 @author: madhu
 """
 
+import warnings
+
 def calculate_discretization(L, T, nx, nt):
     """
     Calculates spatial and temporal step sizes.
@@ -61,3 +63,30 @@ def calculate_accuracy_factors(L, T, nx, nt, D, velocity):
     r_adv = velocity * dt / dx
 
     return r_diff, r_adv
+
+def check_accuracy_guidelines(L, T, nx, nt, D, velocity):
+    """
+    Validate the stability conditions for accuracy in the 1D advection-diffusion equation.
+
+    Ensures that the diffusion stability factor (r_diff) is below 0.5 and the 
+    advection stability factor (r_adv) is below 1.0 for numerical accuracy.
+    This does not enforce strict stability limits but serves as a guideline for
+    maintaining solution accuracy and physical interpretability.
+
+    Args:
+        L (float): Length of the domain.
+        T (float): Total simulation time.
+        nx (int): Number of spatial steps.
+        nt (int): Number of time steps.
+        D (float): Diffusivity coefficient of the medium.
+        velocity (float): Advection velocity.
+
+    Warns:
+        UserWarning: If the accuracy conditions are not met.
+    """
+    r_diff, r_adv = calculate_accuracy_factors(L, T, nx, nt, D, velocity)
+    
+    if r_diff > 0.5:
+        warnings.warn(f"Potential accuracy issue: r_diff={r_diff}. Recommended r_diff < 0.5 for accuracy.", UserWarning)
+    if r_adv > 1.0:
+        warnings.warn(f"Potential accuracy issue: r_adv={r_adv}. Recommended r_adv < 1.0 for accuracy.", UserWarning)
