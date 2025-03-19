@@ -8,7 +8,8 @@ Created on Sat Mar 15 21:53:56 2025
 import pytest
 from math import isclose
 import warnings
-from functions import calculate_discretization, calculate_accuracy_factors, check_accuracy_guidelines
+import numpy as np
+from functions import calculate_discretization, calculate_accuracy_factors, check_accuracy_guidelines, setup_gaussian_pulse 
 
 # Numerical test cases for different configurations
 advection_diffusion_cases = [
@@ -145,3 +146,55 @@ def test_check_accuracy_guidelines_warns(params):
     with warnings.catch_warnings(record=True):
         warnings.simplefilter("always")  
         check_accuracy_guidelines(**params)
+
+@pytest.mark.parametrize("params", advection_diffusion_cases)
+def test_default_setup_gaussian_pulse(params):
+    """
+    Test that the setup_gaussian_pulse generates a Gaussian pulse with correct propertie for default x0 and sigma.
+    
+    GIVEN: A set of parameters describing the domain length (L), number of spatial steps (nx).
+    WHEN: The setup_gaussian_pulse function is called with these parameters.
+    THEN: The resulting Gaussian pulse should be a numpy array with the correct shape, and the values 
+          of the pulse should be close to that of a gaussian pulse with default x0 and sigma.
+
+    """
+    L = params["L"]
+    nx = params["nx"]
+    result = setup_gaussian_pulse(L, nx)  
+   
+    x0_default = L / 2
+    sigma_default = L / 20
+   
+    x = np.linspace(0, L, nx)
+    expected = np.exp(-0.5 * ((x - x0_default) / sigma_default)**2)
+   
+    assert isinstance(result, np.ndarray), "Result should be a numpy array"
+    assert result.shape == (nx,), f"Expected shape {(nx,)}, got {result.shape}"
+    np.testing.assert_allclose(result, expected, atol=1e-7,
+             err_msg="Gaussian pulse does not match expected values with default x0 and sigma")
+    
+@pytest.mark.parametrize("params", advection_diffusion_cases)
+@pytest.mark.parametrize("x0, sigma", [(0.3, 0.05), (0.7, 0.1), (1.0, 0.2)])
+def test_custom_setup_gaussian_pulse(params, x0, sigma):
+    """
+    Test that the setup_gaussian_pulse generates a Gaussian pulse with correct properties for custom x0 and sigma.
+    
+    GIVEN: A set of parameters describing the domain length (L), number of spatial steps (nx),
+           along with custom values for the center of the pulse (x0) and the width (sigma).
+    WHEN: The setup_gaussian_pulse function is called with these parameters.
+    THEN: The resulting Gaussian pulse should be a numpy array with the correct shape, and the values
+          of the pulse should be close to that of a gaussian pulse with custom values of x0 and sigma.
+
+    """
+    L = params["L"]
+    nx = params["nx"]
+    result = setup_gaussian_pulse(L, nx, x0=x0, sigma=sigma)  
+    
+    x = np.linspace(0, L, nx)
+    expected = np.exp(-0.5 * ((x - x0) / sigma)**2)
+    
+    assert isinstance(result, np.ndarray), "Result should be a numpy array"
+    assert result.shape == (nx,), f"Expected shape {(nx,)}, got {result.shape}"
+    np.testing.assert_allclose(result, expected, atol=1e-7, 
+             err_msg="Gaussian pulse does not match expected values for given x0 and sigma")
+   
