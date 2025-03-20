@@ -210,37 +210,37 @@ def test_create_matrices(params):
           
     """
     L, T, D, velocity, nx, nt = params["L"], params["T"], params["D"], params["velocity"], params["nx"], params["nt"] 
-    r_diff, r_conv = calculate_accuracy_factors(L, T, nx, nt, D, velocity)
-    A, B = create_matrices(nx, r_diff, r_conv)
+    r_diff, r_adv = calculate_accuracy_factors(L, T, nx, nt, D, velocity)
+    A, B = create_matrices(nx, r_diff, r_adv)
 
     assert A.shape == (nx, nx), f"A shape mismatch: {A.shape}"
     assert B.shape == (nx, nx), f"B shape mismatch: {B.shape}"
     assert np.allclose(np.diag(A), 1 + r_diff), "A main diagonal incorrect"
     assert np.allclose(np.diag(B), 1 - r_diff), "B main diagonal incorrect"
-    assert np.allclose(np.diag(A, k=1), -0.5 * r_diff - 0.25 * r_conv), "A upper diagonal incorrect"
-    assert np.allclose(np.diag(A, k=-1), -0.5 * r_diff + 0.25 * r_conv), "A lower diagonal incorrect"
-    assert np.allclose(np.diag(B, k=1), 0.5 * r_diff + 0.25 * r_conv), "B upper diagonal incorrect"
-    assert np.allclose(np.diag(B, k=-1), 0.5 * r_diff - 0.25 * r_conv), "B lower diagonal incorrect"
+    assert np.allclose(np.diag(A, k=1), -0.5 * r_diff - 0.25 * r_adv), "A upper diagonal incorrect"
+    assert np.allclose(np.diag(A, k=-1), -0.5 * r_diff + 0.25 * r_adv), "A lower diagonal incorrect"
+    assert np.allclose(np.diag(B, k=1), 0.5 * r_diff + 0.25 * r_adv), "B upper diagonal incorrect"
+    assert np.allclose(np.diag(B, k=-1), 0.5 * r_diff - 0.25 * r_adv), "B lower diagonal incorrect"
 
 @pytest.mark.parametrize("nx", [2, 3, 5])
 @pytest.mark.parametrize("r_diff", [0.0, 0.1])
-@pytest.mark.parametrize("r_conv", [0.0, 0.2])
-def test_create_matrices_edge_cases(nx, r_diff, r_conv):
+@pytest.mark.parametrize("r_adv", [0.0, 0.2])
+def test_create_matrices_edge_cases(nx, r_diff, r_adv):
     """
-    Test create_matrices across edge cases involving zero and non-zero r_diff and r_conv values with small nx values.
+    Test create_matrices across edge cases involving zero and non-zero r_diff and r_adv values with small nx values.
 
-    GIVEN: Combinations of small nx values with zero and non-zero r_diff and r_conv values.
+    GIVEN: Combinations of small nx values with zero and non-zero r_diff and r_adv values.
     WHEN: create_matrices is called with each combination.
     THEN: The returned matrices A and B should have shape (nx, nx) and contain expected values along diagnols,
           as required for the Crank-Nicolson method for the 1-D advection-diffusion equation.
     """
-    A, B = create_matrices(nx, r_diff, r_conv)
+    A, B = create_matrices(nx, r_diff, r_adv)
 
     assert A.shape == (nx, nx), f"A shape mismatch: {A.shape}"
     assert B.shape == (nx, nx), f"B shape mismatch: {B.shape}"
     assert np.allclose(np.diag(A), 1 + r_diff), "A main diagonal incorrect"
     assert np.allclose(np.diag(B), 1 - r_diff), "B main diagonal incorrect"
-    assert np.allclose(np.diag(A, k=1), -0.5 * r_diff - 0.25 * r_conv), "A upper diagonal incorrect"
-    assert np.allclose(np.diag(A, k=-1), -0.5 * r_diff + 0.25 * r_conv), "A lower diagonal incorrect"
-    assert np.allclose(np.diag(B, k=1), 0.5 * r_diff + 0.25 * r_conv), "B upper diagonal incorrect"
-    assert np.allclose(np.diag(B, k=-1), 0.5 * r_diff - 0.25 * r_conv), "B lower diagonal incorrect"
+    assert np.allclose(np.diag(A, k=1), -0.5 * r_diff - 0.25 * r_adv), "A upper diagonal incorrect"
+    assert np.allclose(np.diag(A, k=-1), -0.5 * r_diff + 0.25 * r_adv), "A lower diagonal incorrect"
+    assert np.allclose(np.diag(B, k=1), 0.5 * r_diff + 0.25 * r_adv), "B upper diagonal incorrect"
+    assert np.allclose(np.diag(B, k=-1), 0.5 * r_diff - 0.25 * r_adv), "B lower diagonal incorrect"

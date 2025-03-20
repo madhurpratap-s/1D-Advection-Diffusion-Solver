@@ -116,7 +116,7 @@ def setup_gaussian_pulse(L, nx, x0=None, sigma=None):
     
     return np.exp(-0.5 * ((x - x0) / sigma)**2)
 
-def create_matrices(nx, r_diff, r_conv):
+def create_matrices(nx, r_diff, r_adv):
     """
     Creates matrices A and B for the Crank-Nicolson method used in solving 
     the 1D advection-diffusion equation.
@@ -124,7 +124,7 @@ def create_matrices(nx, r_diff, r_conv):
     Args:
         nx (int): Number of spatial grid points.
         r_diff (float): Diffusion number (D * dt / dx^2).
-        r_conv (float): Convection number (v * dt / dx).
+        r_conv (float): Advection number (v * dt / dx).
 
     Returns:
         tuple of numpy.ndarray: Matrices A and B used in the Crank-Nicolson 
@@ -136,11 +136,11 @@ def create_matrices(nx, r_diff, r_conv):
     B_main = np.ones(nx) * (1 - r_diff)
 
     # Upper and lower diagonals
-    A_upper = np.ones(nx - 1) * (-0.5 * r_diff - 0.25 * r_conv)  
-    A_lower = np.ones(nx - 1) * (-0.5 * r_diff + 0.25 * r_conv)  
+    A_upper = np.ones(nx - 1) * (-0.5 * r_diff - 0.25 * r_adv)  
+    A_lower = np.ones(nx - 1) * (-0.5 * r_diff + 0.25 * r_adv)  
 
-    B_upper = np.ones(nx - 1) * (0.5 * r_diff + 0.25 * r_conv) 
-    B_lower = np.ones(nx - 1) * (0.5 * r_diff - 0.25 * r_conv)  
+    B_upper = np.ones(nx - 1) * (0.5 * r_diff + 0.25 * r_adv) 
+    B_lower = np.ones(nx - 1) * (0.5 * r_diff - 0.25 * r_adv)  
 
     # Construct matrices
     A = np.diag(A_main) + np.diag(A_upper, k=1) + np.diag(A_lower, k=-1)
