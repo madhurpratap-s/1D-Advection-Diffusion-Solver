@@ -147,3 +147,26 @@ def create_matrices(nx, r_diff, r_adv):
     B = np.diag(B_main) + np.diag(B_upper, k=1) + np.diag(B_lower, k=-1)
 
     return A, B
+
+def apply_boundary_conditions(A, B): 
+    """
+    Applies homogeneous Dirichlet boundary conditions to matrices A and B.
+
+    Args:
+        A (numpy.ndarray): Matrix A for the Crank-Nicolson method.
+        B (numpy.ndarray): Matrix B for the Crank-Nicolson method.
+
+    Returns:
+        tuple: Modified matrices A and B with boundary conditions applied.
+    """
+    A[0, :] = 0
+    A[0, 0] = 1
+    A[-1, :] = 0
+    A[-1, -1] = 1
+
+    B[0, :] = 0
+    B[0, 0] = 1
+    B[-1, :] = 0
+    B[-1, -1] = 1
+
+    return A, B
