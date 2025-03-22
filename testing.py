@@ -9,7 +9,8 @@ import pytest
 from math import isclose
 import warnings
 import numpy as np
-from functions import calculate_discretization, calculate_accuracy_factors, check_accuracy_guidelines, setup_gaussian_pulse, create_matrices
+from functions import (calculate_discretization, calculate_accuracy_factors, check_accuracy_guidelines,
+                       setup_gaussian_pulse, create_matrices, apply_boundary_conditions)
 
 # Numerical test cases for different configurations
 advection_diffusion_cases = [
@@ -244,3 +245,56 @@ def test_create_matrices_edge_cases(nx, r_diff, r_adv):
     assert np.allclose(np.diag(A, k=-1), -0.5 * r_diff + 0.25 * r_adv), "A lower diagonal incorrect"
     assert np.allclose(np.diag(B, k=1), 0.5 * r_diff + 0.25 * r_adv), "B upper diagonal incorrect"
     assert np.allclose(np.diag(B, k=-1), 0.5 * r_diff - 0.25 * r_adv), "B lower diagonal incorrect"
+    
+@pytest.mark.parametrize("shape", [(3, 3), (5, 5), (10, 10)])
+def test_boundary_rows_modified_correctly(shape):
+    """
+    GIVEN: A and B matrices of different sizes with all elements equal to one.
+    WHEN: apply_boundary_conditions is called.
+    THEN: First and last rows should be zeroed out, except (0,0) and (-1,-1) which should be 1.
+    
+    """
+    assert len(shape) == 2, "Shape must be 2-dimensional"
+    
+    A = np.ones(shape)
+    B = np.ones(shape)
+
+    A_result, B_result = apply_boundary_conditions(A.copy(), B.copy())
+
+    for M in [A_result, B_result]:
+        assert np.all(M[0, 1:] == 0), "Top row not zeroed properly"
+        assert M[0, 0] == 1, "Top-left corner not set to 1"
+        assert np.all(M[-1, :-1] == 0), "Bottom row not zeroed properly"
+        assert M[-1, -1] == 1, "Bottom-right corner not set to 1"
+
+@pytest.mark.parametrize("shape", [(3, 3), (5, 5), (10, 10)])
+@pytest.mark.parametrize("matrix_func", ["eye", "zeros", "rand"])
+def test_inner_values_preserved(shape, matrix_func):
+    """
+    GIVEN: A and B matrices initialized with various inner values.
+    WHEN: apply_boundary_conditions is called.
+    THEN: The interior of the matrices should remain unchanged.
+    
+    """
+    assert len(shape) == 2, "Shape must be 2-dimensional"
+    
+    def generate_matrix(func_name, shape):
+        if func_name == "eye":
+            return np.eye(N=shape[0], M=shape[1])
+        elif func_name == "zeros":
+            return np.zeros(shape)
+        elif func_name == "rand":
+            return np.random.rand(*shape)
+        else:
+            raise ValueError("Unknown matrix function")
+
+    A = generate_matrix(matrix_func, shape)
+    B = generate_matrix(matrix_func, shape)
+
+    A_inner_expected = A[1:-1, 1:-1].copy()
+    B_inner_expected = B[1:-1, 1:-1].copy()
+
+    A_result, B_result = apply_boundary_conditions(A.copy(), B.copy())
+
+    assert np.allclose(A_result[1:-1, 1:-1], A_inner_expected), "Interior of A changed unexpectedly"
+    assert np.allclose(B_result[1:-1, 1:-1], B_inner_expected), "Interior of B changed unexpectedly"
