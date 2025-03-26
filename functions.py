@@ -37,14 +37,10 @@ def calculate_discretization(L, T, nx, nt):
     
     return dx, dt
 
-def calculate_accuracy_factors(L, T, nx, nt, D, velocity):
+def calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity):
     """
-    Calculates the accuracy factors for the Crank-Nicolson method applied to the advection-diffusion equation.
-
-    Although the Crank-Nicolson method is unconditionally stable for the advection-diffusion equation,
-    poor choices of spatial and temporal discretization can lead to numerical inaccuracies such as
-    oscillations or excessive numerical diffusion. These dimensionless numbers help assess the 
-    suitability of discretization choices for maintaining accuracy in the simulation.
+    Calculates the accuracy factors for the Crank-Nicolson method applied to the advection-diffusion equation
+    and checks whether they meet the guidelines for acccurate simulation.
 
     Args:
         L (float): Length of the domain.
@@ -58,39 +54,23 @@ def calculate_accuracy_factors(L, T, nx, nt, D, velocity):
         tuple: A tuple containing:
             - r_diff (float): Diffusion accuracy factor (D * Δt / Δx²).
             - r_adv (float): Advection accuracy factor (velocity * Δt / Δx).
+    
+    Warns:
+        UserWarning: If the accuracy conditions are not met (if r_diff > 0.5 or r_adv > 1.0).
+        
     """
     dx, dt = calculate_discretization(L, T, nx, nt)
+
     r_diff = D * dt / dx**2
     r_adv = velocity * dt / dx
-
-    return r_diff, r_adv
-
-def check_accuracy_guidelines(L, T, nx, nt, D, velocity):
-    """
-    Validate the stability conditions for accuracy in the 1D advection-diffusion equation.
-
-    Ensures that the diffusion stability factor (r_diff) is below 0.5 and the 
-    advection stability factor (r_adv) is below 1.0 for numerical accuracy.
-    This does not enforce strict stability limits but serves as a guideline for
-    maintaining solution accuracy and physical interpretability.
-
-    Args:
-        L (float): Length of the domain.
-        T (float): Total simulation time.
-        nx (int): Number of spatial steps.
-        nt (int): Number of time steps.
-        D (float): Diffusivity coefficient of the medium.
-        velocity (float): Advection velocity.
-
-    Warns:
-        UserWarning: If the accuracy conditions are not met.
-    """
-    r_diff, r_adv = calculate_accuracy_factors(L, T, nx, nt, D, velocity)
     
     if r_diff > 0.5:
         warnings.warn(f"Potential accuracy issue: r_diff={r_diff}. Recommended r_diff < 0.5 for accuracy.", UserWarning)
     if r_adv > 1.0:
         warnings.warn(f"Potential accuracy issue: r_adv={r_adv}. Recommended r_adv < 1.0 for accuracy.", UserWarning)
+    
+    return r_diff, r_adv
+
         
 def setup_gaussian_pulse(L, nx, x0=None, sigma=None):
     """
@@ -187,10 +167,10 @@ def solve_advection_diffusion_CN(L, T, nx, nt, D, velocity):
         Tuple[numpy.ndarray, numpy.ndarray]: 
             - x (numpy.ndarray): Spatial grid points of length `nx`.
             - u (numpy.ndarray): Concentration profile of shape [nx, nt] over time.
+            
     """
-    check_accuracy_guidelines(L, T, nx, nt, D, velocity)
-
-    # Setup spatial grid and initial condition (Gaussian pulse)
+    r_diff, r_adv = calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity)
+    
     dx, dt = calculate_discretization(L, T=1.0, nx=nx, nt=5) # Use dummy T and any nt > 2
     x = np.linspace(0, (nx - 1) * dx, nx)
     u = np.zeros((nx, nt))
@@ -200,10 +180,6 @@ def solve_advection_diffusion_CN(L, T, nx, nt, D, velocity):
     u[0, :] = 0
     u[-1, :] = 0
 
-    # Compute accuracy factors
-    r_diff, r_adv = calculate_accuracy_factors(L, T, nx, nt, D, velocity)
-
-    # Construct Crank-Nicolson matrices
     A, B = create_matrices(nx, r_diff, r_adv)
     A, B = apply_boundary_conditions(A, B)
 
