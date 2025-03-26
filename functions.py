@@ -170,3 +170,48 @@ def apply_boundary_conditions(A, B):
     B[-1, -1] = 1
 
     return A, B
+
+def solve_advection_diffusion_CN(L, T, nx, nt, D, velocity):
+    """
+    Solves the 1D advection-diffusion equation using the Crank-Nicolson method.
+
+    Args:
+        L (float): Length of the domain.
+        T (float): Total simulation time.
+        nx (int): Number of spatial steps.
+        nt (int): Number of time steps.
+        D (float): Diffusivity coefficient of the medium.
+        velocity (float): Convection (advection) velocity.
+
+    Returns:
+        Tuple[numpy.ndarray, numpy.ndarray]: 
+            - x (numpy.ndarray): Spatial grid points of length `nx`.
+            - u (numpy.ndarray): Concentration profile of shape [nx, nt] over time.
+    """
+    check_accuracy_guidelines(L, T, nx, nt, D, velocity)
+
+    # Setup spatial grid and initial condition (Gaussian pulse)
+    dx, dt = calculate_discretization(L, T=1.0, nx=nx, nt=5) # Use dummy T and any nt > 2
+    x = np.linspace(0, (nx - 1) * dx, nx)
+    u = np.zeros((nx, nt))
+    u[:, 0] = setup_gaussian_pulse(L, nx)
+
+    # Apply Dirichlet BCs
+    u[0, :] = 0
+    u[-1, :] = 0
+
+    # Compute accuracy factors
+    r_diff, r_adv = calculate_accuracy_factors(L, T, nx, nt, D, velocity)
+
+    # Construct Crank-Nicolson matrices
+    A, B = create_matrices(nx, r_diff, r_adv)
+    A, B = apply_boundary_conditions(A, B)
+
+    # Time-stepping loop
+    for n in range(1, nt):
+        b = B @ u[:, n - 1]
+        b[0] = 0
+        b[-1] = 0
+        u[:, n] = np.linalg.solve(A, b)
+
+    return x, u
