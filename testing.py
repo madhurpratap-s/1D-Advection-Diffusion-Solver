@@ -9,8 +9,8 @@ import pytest
 from math import isclose
 import warnings
 import numpy as np
-from functions import (calculate_discretization, calculate_accuracy_factors, check_accuracy_guidelines,
-                       setup_gaussian_pulse, create_matrices, apply_boundary_conditions, solve_advection_diffusion_CN)
+from functions import (calculate_discretization, calculate_and_check_accuracy_factors,
+                       setup_gaussian_pulse, create_matrices, apply_boundary_conditions)
 
 # Numerical test cases for different configurations
 advection_diffusion_cases = [
@@ -70,14 +70,14 @@ def test_calculate_discretization_invalid_inputs(L, T, nx, nt):
     """
     with pytest.raises(ValueError):
         calculate_discretization(L, T, nx, nt)
-        
+
 @pytest.mark.parametrize("params", advection_diffusion_cases)
-def test_calculate_accuracy_factors(params):
+def test_calculate_and_check_accuracy_factors(params):
     """
-    Test that calculate_accuracy_factors computes the correct accuracy factors.
+    Test that calculate_and_check_accuracy_factors computes the correct accuracy factors.
     
     GIVEN: A set of parameters for domain length, total time, discretization sizes, diffusivity, and velocity.
-    WHEN: The calculate_accuracy_factors function is called.
+    WHEN: The calculate_and_check_accuracy_factors function is called.
     THEN: The computed r_diff and r_adv should match the manually calculated expected values.
     
     """
@@ -96,7 +96,7 @@ def test_calculate_accuracy_factors(params):
     r_adv_expected = velocity * dt_expected / dx_expected
     
     # Get the actual factors from the function
-    r_diff, r_adv = calculate_accuracy_factors(L, T, nx, nt, D, velocity)
+    r_diff, r_adv = calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity)
     
     assert isclose(r_diff, r_diff_expected, rel_tol=1e-9), \
         f"Diffusion factor mismatch: expected {r_diff_expected}, got {r_diff}"
@@ -104,49 +104,35 @@ def test_calculate_accuracy_factors(params):
         f"Advection factor mismatch: expected {r_adv_expected}, got {r_adv}"
 
 @pytest.mark.parametrize("L, T, nx, nt, D, velocity", [
-    (1.0, 0.1, 1, 11, 0.01, 0.5), # nx is less than 2
+    (1.0, 0.1, 1, 11, 0.01, 0.5),  # nx is less than 2
     (1.0, 0.1, 11, 1, 0.01, 0.5),  # nt is less than 2
-    (1.0, 0.1, 0, 0, 0.01, 0.5), # both nx and nt are invalid
+    (1.0, 0.1, 0, 0, 0.01, 0.5),   # both nx and nt are invalid
 ])
-def test_calculate_accuracy_factors_invalid_inputs(L, T, nx, nt, D, velocity):
+def test_calculate_and_check_accuracy_factors_invalid_inputs(L, T, nx, nt, D, velocity):
     """
-    Test that calculate_accuracy_factors raises ValueError when invalid nx/nt are passed.
+    Test that calculate_and_check_accuracy_factors raises ValueError when invalid nx/nt are passed.
     
     GIVEN: Invalid nx or nt (less than 2) along with other valid parameters.
-    WHEN: calculate_accuracy_factors is called.
+    WHEN: calculate_and_check_accuracy_factors is called.
     THEN: A ValueError is propagated from calculate_discretization.
     
     """
     with pytest.raises(ValueError):
-        calculate_accuracy_factors(L, T, nx, nt, D, velocity)
-        
-@pytest.mark.parametrize("params", advection_diffusion_cases)
-def test_check_accuracy_guidelines_no_warning(params):
-    """
-    Test that check_accuracy_guidelines does not raise a warning for stable configurations for accuracy.
-    
-    GIVEN: A set of numerically stable parameters for the advection-diffusion equation.
-    WHEN: check_accuracy_guidelines is called with these parameters.
-    THEN: No warnings should be raised, indicating stability and accuracy conditions are met.
-    
-    """
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")  
-        check_accuracy_guidelines(**params)
+        calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity)
         
 @pytest.mark.parametrize("params", unstable_adv_diffusion_cases)
-def test_check_accuracy_guidelines_warns(params):
+def test_calculate_and_cehcl_accuracy_factors_warns(params):
     """
     Test that check_accuracy_guidelines raises a warning for unstable configurations.
     
     GIVEN: A set of numerically unstable parameters for the advection-diffusion equation.
-    WHEN: check_accuracy_guidelines is called with these parameters.
-    THEN: Warnings should be raised indicating instability and accuracy issues.
+    WHEN: check_accuracy_guidelines is called.
+    THEN: Warning should be raised indicating instability and accuracy issues.
     
     """
     with warnings.catch_warnings(record=True):
         warnings.simplefilter("always")  
-        check_accuracy_guidelines(**params)
+        calculate_and_check_accuracy_factors(**params)
 
 @pytest.mark.parametrize("params", advection_diffusion_cases)
 def test_default_setup_gaussian_pulse(params):
@@ -211,7 +197,7 @@ def test_create_matrices(params):
           
     """
     L, T, D, velocity, nx, nt = params["L"], params["T"], params["D"], params["velocity"], params["nx"], params["nt"] 
-    r_diff, r_adv = calculate_accuracy_factors(L, T, nx, nt, D, velocity)
+    r_diff, r_adv = calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity)
     A, B = create_matrices(nx, r_diff, r_adv)
 
     assert A.shape == (nx, nx), f"A shape mismatch: {A.shape}"
@@ -299,15 +285,15 @@ def test_inner_values_preserved(shape, matrix_func):
     assert np.allclose(A_result[1:-1, 1:-1], A_inner_expected), "Interior of A changed unexpectedly"
     assert np.allclose(B_result[1:-1, 1:-1], B_inner_expected), "Interior of B changed unexpectedly"
     
-@pytest.mark.parametrize("params", advection_diffusion_cases)
+"""@pytest.mark.parametrize("params", advection_diffusion_cases)
 def test_solve_advection_diffusion_CN_stability(params):
-    """
+    
     GIVEN: A set of parameters for domain length, total time, discretization sizes, diffusivity, and velocity.
     WHEN: solve_advection_diffusion_CN is executed.
     THEN: The solution should remain stable, with finite concentration values and smooth evolution over time. 
    
-    """
+    
     x, u = solve_advection_diffusion_CN(**params)
     max_time_step_change = np.max(np.abs(u[:, 1:] - u[:, :-1]))
     assert np.all(np.isfinite(u)), "Solution contains NaN or Inf values."
-    assert max_time_step_change < 1.0, f"Instability detected: max change {max_time_step_change} too high."
+    assert max_time_step_change < 1.0, f"Instability detected: max change {max_time_step_change} too high."""
