@@ -170,13 +170,11 @@ def solve_advection_diffusion_CN(L, T, nx, nt, D, velocity):
             
     """
     r_diff, r_adv = calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity)
-    
-    dx, dt = calculate_discretization(L, T=1.0, nx=nx, nt=5) # Use dummy T and any nt > 2
-    x = np.linspace(0, (nx - 1) * dx, nx)
+    x = np.linspace(0, L, nx)
     u = np.zeros((nx, nt))
     u[:, 0] = setup_gaussian_pulse(L, nx)
 
-    # Apply Dirichlet BCs
+    # Apply Dirichlet boundary condition to solution array
     u[0, :] = 0
     u[-1, :] = 0
 

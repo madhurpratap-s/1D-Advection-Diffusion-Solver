@@ -10,7 +10,7 @@ from math import isclose
 import warnings
 import numpy as np
 from functions import (calculate_discretization, calculate_and_check_accuracy_factors,
-                       setup_gaussian_pulse, create_matrices, apply_boundary_conditions)
+                       setup_gaussian_pulse, create_matrices, apply_boundary_conditions, solve_advection_diffusion_CN)
 
 # Numerical test cases for different configurations
 advection_diffusion_cases = [
@@ -285,15 +285,15 @@ def test_inner_values_preserved(shape, matrix_func):
     assert np.allclose(A_result[1:-1, 1:-1], A_inner_expected), "Interior of A changed unexpectedly"
     assert np.allclose(B_result[1:-1, 1:-1], B_inner_expected), "Interior of B changed unexpectedly"
     
-"""@pytest.mark.parametrize("params", advection_diffusion_cases)
+@pytest.mark.parametrize("params", advection_diffusion_cases)
 def test_solve_advection_diffusion_CN_stability(params):
-    
+    """
     GIVEN: A set of parameters for domain length, total time, discretization sizes, diffusivity, and velocity.
     WHEN: solve_advection_diffusion_CN is executed.
     THEN: The solution should remain stable, with finite concentration values and smooth evolution over time. 
-   
+    """
     
     x, u = solve_advection_diffusion_CN(**params)
     max_time_step_change = np.max(np.abs(u[:, 1:] - u[:, :-1]))
     assert np.all(np.isfinite(u)), "Solution contains NaN or Inf values."
-    assert max_time_step_change < 1.0, f"Instability detected: max change {max_time_step_change} too high."""
+    assert max_time_step_change < 1.0, f"Instability detected: max change {max_time_step_change} too high."
