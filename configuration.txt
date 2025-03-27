@@ -1,0 +1,11 @@
+[simulation_paramters]
+length = 10.0        
+total time = 2.0           
+nx = 401               
+nt = 201              
+diffusivity = 1.0     
+velocity = 0.5        
+
+[paths]
+numerical_solution: ./numerical_solution_A.npy
+analytical_solution: ./analytical_solution_B.npy
