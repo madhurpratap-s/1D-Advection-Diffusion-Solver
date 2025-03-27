@@ -10,7 +10,8 @@ from math import isclose
 import warnings
 import numpy as np
 from functions import (calculate_discretization, calculate_and_check_accuracy_factors,
-                       setup_gaussian_pulse, create_matrices, apply_boundary_conditions, solve_advection_diffusion_CN)
+                       setup_gaussian_pulse, create_matrices, apply_boundary_conditions, solve_advection_diffusion_CN,
+                       solve_advection_diffusion_analytical)
 
 # Numerical test cases for different configurations
 advection_diffusion_cases = [
@@ -320,4 +321,55 @@ def test_solve_advection_diffusion_CN_warns(params):
         warnings.simplefilter("always")
         solve_advection_diffusion_CN(**params)
 
+@pytest.mark.parametrize(
+    "params, x0, sigma", 
+    [(param, x0, sigma) for param in advection_diffusion_cases for x0, sigma in [(5.0, 1.0), (3.0, 0.5), (7.0, 2.0)]]
+)
+def test_solve_advection_diffusion_analytical(params, x0, sigma):
+    """
+    Test that solve_advection_diffusion_analytical behaves correctly with same number of reflections,
+    initial conditions, and pulse widths.
 
+    GIVEN: A set of parameters for domain length, total time, discretization sizes, diffusivity, velocity and initial conditions.
+    WHEN: solve_advection_diffusion_analytical is executed.
+    THEN: The solution should remain stable and have a smooth time evolution.
+    
+    """
+    nx = params['nx']
+    nt = params['nt']
+    x, u = solve_advection_diffusion_analytical(**params)
+    max_change = np.max(np.abs(np.diff(u, axis=1)))
+    assert np.all(np.isfinite(u)), "Solution contains NaN or Inf values."   
+    assert max_change < 1.0, f"Instability detected: max change {max_change} too high."
+    assert u.shape == (nx, nt), f"Expected shape {(nx, nt)}, got {u.shape}"
+
+@pytest.mark.parametrize(
+    "params, x0, sigma, num_reflections", 
+    [(param, x0, sigma, num_reflections) for param in advection_diffusion_cases 
+     for x0, sigma in [(5.0, 1.0), (3.0, 0.5), (7.0, 2.0)] 
+     for num_reflections in [1, 5, 10, 20, -1, -5, -10]]
+)
+def test_solve_advection_diffusion_analytical_reflections(params, x0, sigma, num_reflections):
+    """
+    Test that solve_advection_diffusion_analytical behaves correctly with different numbers of reflections,
+    initial conditions, and pulse widths.
+    
+    GIVEN: A set of parameters for domain length, total time, discretization sizes, diffusivity, velocity,
+           initial conditions (x0, sigma), and number of reflections.
+    WHEN: solve_advection_diffusion_analytical is called.
+    THEN: If num_reflections < 0, a ValueError is raised; otherwise, the function executes, producing a stable and smooth time evolution solution.
+    
+    """
+    if num_reflections < 0:
+        with pytest.raises(ValueError):
+            solve_advection_diffusion_analytical(num_reflections=num_reflections, x0=x0, sigma=sigma, **params)
+    else:
+        nx = params['nx']
+        nt = params['nt']
+        x, u = solve_advection_diffusion_analytical(num_reflections=num_reflections, x0=x0, sigma=sigma, **params)
+        max_change = np.max(np.abs(np.diff(u, axis=1)))
+        assert np.all(np.isfinite(u)), "Solution contains NaN or Inf values."   
+        assert max_change < 1.0, f"Instability detected: max change {max_change} too high."
+        assert u.shape == (nx, nt), f"Expected shape {(nx, nt)}, got {u.shape}"
+
+    
