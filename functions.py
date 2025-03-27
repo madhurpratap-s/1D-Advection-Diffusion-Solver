@@ -190,3 +190,54 @@ def solve_advection_diffusion_CN(L, T, nx, nt, D, velocity):
 
     return x, u
 
+def solve_advection_diffusion_analytical(L, T, nx, nt, D, velocity, x0=None, sigma=None, num_reflections=5):
+    """
+    Solves the 1D advection-diffusion equation analytically for a finite domain.
+
+    The solution is given by summing over mirrored Gaussians:
+
+        u(x,t) = Σ (sigma / sqrt(sigma^2 + 2*D*t)) * exp( - (x - (x0 + velocity*t) - 2nL)^2 / (2*(sigma^2+2*D*t)) )
+
+    Args:
+        L (float): Length of the spatial domain.
+        T (float): Total simulation time.
+        nx (int): Number of spatial points.
+        nt (int): Number of time steps.
+        D (float): Diffusivity coefficient.
+        velocity (float): Convection (advection) velocity.
+        x0 (float, optional): Center of the initial Gaussian pulse. Defaults to L/3.
+        sigma (float, optional): Width of the Gaussian pulse. Defaults to L/12.
+        num_reflections (int, optional): Number of mirrored sources to consider (higher = more accurate).
+    
+    Returns:
+        tuple: (x, u)
+            - x (numpy.ndarray): Spatial grid points.
+            - u (numpy.ndarray): 2D solution array (shape: (nx, nt)), with each column representing a time step.
+    Raises:
+        ValueError: If num_reflections is less than 1.
+    
+    """
+    if num_reflections < 1:
+        raise ValueError("num_reflections must be a positive integer (>= 1).")
+        
+    dx, dt = calculate_discretization(L, T, nx, nt)
+    x = np.linspace(0, (nx - 1) * dx, nx)
+
+    # Set default Gaussian pulse parameters
+    if x0 is None:
+        x0 = L / 2
+    if sigma is None:
+        sigma = L / 20
+
+    u = np.zeros((nx, nt))
+
+    # Time-stepping loop
+    for n in range(nt):
+        t = n * dt
+        denom = sigma**2 + 2 * D * t
+
+        for m in range(-num_reflections, num_reflections + 1):
+            x_shift = x0 + velocity * t + 2 * m * L  # Mirrored image shifts
+            u[:, n] += (sigma / np.sqrt(denom)) * np.exp(-((x - x_shift) ** 2) / (2 * denom))
+
+    return x, u
