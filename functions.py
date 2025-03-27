@@ -189,3 +189,4 @@ def solve_advection_diffusion_CN(L, T, nx, nt, D, velocity):
         u[:, n] = np.linalg.solve(A, b)
 
     return x, u
+

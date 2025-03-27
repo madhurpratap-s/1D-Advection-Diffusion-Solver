@@ -121,9 +121,9 @@ def test_calculate_and_check_accuracy_factors_invalid_inputs(L, T, nx, nt, D, ve
         calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity)
         
 @pytest.mark.parametrize("params", unstable_adv_diffusion_cases)
-def test_calculate_and_cehcl_accuracy_factors_warns(params):
+def test_calculate_and_check_accuracy_factors_warns(params):
     """
-    Test that check_accuracy_guidelines raises a warning for unstable configurations.
+    Test that calculate_and_check_accuracy_factors raises a warning for unstable configurations.
     
     GIVEN: A set of numerically unstable parameters for the advection-diffusion equation.
     WHEN: check_accuracy_guidelines is called.
@@ -288,12 +288,36 @@ def test_inner_values_preserved(shape, matrix_func):
 @pytest.mark.parametrize("params", advection_diffusion_cases)
 def test_solve_advection_diffusion_CN_stability(params):
     """
+    Test that solve_advection_diffusion_CN behaves normally with configurations satisfying accuracy guidelines.
+    
     GIVEN: A set of parameters for domain length, total time, discretization sizes, diffusivity, and velocity.
     WHEN: solve_advection_diffusion_CN is executed.
-    THEN: The solution should remain stable, with finite concentration values and smooth evolution over time. 
-    """
+    THEN: The solution should remain stable, boundary conditions should be applied and have smooth time solution.
     
+    """
+    nx = params['nx']
+    nt = params['nt']
     x, u = solve_advection_diffusion_CN(**params)
     max_time_step_change = np.max(np.abs(u[:, 1:] - u[:, :-1]))
     assert np.all(np.isfinite(u)), "Solution contains NaN or Inf values."
+    assert np.allclose(u[0, :], 0), "Left boundary condition not satisfied"
+    assert np.allclose(u[-1, :], 0), "Right boundary condition not satisfied"
     assert max_time_step_change < 1.0, f"Instability detected: max change {max_time_step_change} too high."
+    assert u.shape == (nx, nt), f"Expected shape {(nx, nt)}, got {u.shape}"
+    
+
+@pytest.mark.parametrize("params", unstable_adv_diffusion_cases)
+def test_solve_advection_diffusion_CN_warns(params):
+    """
+    Test that solve_advection_diffusion_CN raises a warning for configurations not satisfying accuracy guidelines.
+    
+    GIVEN: A set of numerically unstable parameters for the advection-diffusion equation.
+    WHEN: solve_advection_diffusion_CN is executed.
+    THEN: A warning should be raised indicating instability and accuracy issues.
+    
+    """
+    with warnings.catch_warnings(record=True):
+        warnings.simplefilter("always")
+        solve_advection_diffusion_CN(**params)
+
+
