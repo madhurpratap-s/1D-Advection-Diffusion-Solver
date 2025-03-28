@@ -6,7 +6,9 @@ Created on Sat Mar 15 21:53:28 2025
 """
 
 import configparser
-from functions import calculate_and_check_accuracy_factors
+import argparse
+import numpy as np
+from functions import calculate_and_check_accuracy_factors, solve_advection_diffusion_CN, solve_advection_diffusion_analytical
 
 def process_configuration_file(config_file):
     """
@@ -43,7 +45,6 @@ def process_configuration_file(config_file):
     config = configparser.ConfigParser()
     config.read(config_file)
 
-    # Read simulation parameters from the config file
     L = float(config.get('simulation_paramters', 'length'))
     T = float(config.get('simulation_paramters', 'total time'))
     nx = int(config.get('simulation_paramters', 'nx'))
@@ -53,8 +54,26 @@ def process_configuration_file(config_file):
     
     calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity)
 
-    # Read output paths
     numerical_solution_path = config.get('paths', 'numerical_solution')
     analytical_solution_path = config.get('paths', 'analytical_solution')
 
     print(f"Running simulation with nx={nx}, nt={nt}")
+    
+    x, u_numerical = solve_advection_diffusion_CN(L, T, nx, nt, D, velocity)
+    x, u_analytical = solve_advection_diffusion_analytical(L, T, nx, nt, D, velocity)
+
+    np.save(numerical_solution_path, u_numerical)
+    np.save(analytical_solution_path, u_analytical)
+    
+    # Using functions as if they already exist.
+    plot_1d_solutions(x, u_numerical, u_analytical, nt, T, L, nx, D)
+    plot_3d_surface(x, u_numerical, nt,T, nx, L, diffusivity, velocity)
+    
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Run 1-D advection-diffusion equation simulation using a configuration file."
+    )
+    parser.add_argument("config_file", nargs="?", default="configuration.txt")
+    # The user can choose a specific configuration via command line or use the default one.
+    args = parser.parse_args()
+    process_configuration_file(args.config_file)
