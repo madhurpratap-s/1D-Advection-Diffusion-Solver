@@ -9,6 +9,7 @@ import configparser
 import argparse
 import numpy as np
 from functions import calculate_and_check_accuracy_factors, solve_advection_diffusion_CN, solve_advection_diffusion_analytical
+from plot import
 
 def process_configuration_file(config_file):
     """
@@ -65,9 +66,8 @@ def process_configuration_file(config_file):
     np.save(numerical_solution_path, u_numerical)
     np.save(analytical_solution_path, u_analytical)
     
-    # Using functions as if they already exist.
-    plot_1d_solutions(x, u_numerical, u_analytical, nt, T, L, nx, D)
-    plot_3d_surface(x, u_numerical, nt,T, nx, L, diffusivity, velocity)
+    plot_1d_solutions(x, u_numerical, u_analytical, nt, T, L, nx, D, velocity)
+    plot_3d_surface(x, u_numerical, nt, T, L, nx, D, velocity)
     
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
