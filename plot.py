@@ -64,7 +64,7 @@ def plot_3d_surface(x, u_numerical, nt, T, L, nx, D, velocity):
     
     fig = plt.figure(figsize=(10, 6))
     ax = fig.add_subplot(111, projection='3d')
-    surf = ax.plot_surface(X, T, u_numerical, cmap='blues', edgecolor='black', alpha=0.8)
+    surf = ax.plot_surface(X, T, u_numerical, cmap='viridis', edgecolor='black', alpha=0.8)
     
     ax.set_xlabel('Spatial coordinate, x')
     ax.set_ylabel('Time, t')
