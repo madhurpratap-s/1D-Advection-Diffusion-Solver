@@ -167,7 +167,7 @@ def test_custom_setup_gaussian_pulse(params, x0, sigma):
     """
     Test that the setup_gaussian_pulse generates a Gaussian pulse with correct properties for custom x0 and sigma.
     
-    GIVEN: A set of parameters describing the domain length (L), number of spatial steps (nx),
+    GIVEN: A set of parameters for domain length, total time, discretization sizes, diffusivity, and velocity
            along with custom values for the center of the pulse (x0) and the width (sigma).
     WHEN: The setup_gaussian_pulse function is called with these parameters.
     THEN: The resulting Gaussian pulse should be a numpy array with the correct shape, and the values
@@ -193,7 +193,7 @@ def test_create_matrices(params):
     
     GIVEN: A set of parameters for domain length, total time, discretization sizes, diffusivity, and velocity.
     WHEN: The create_matrices function is called with computed diffusion and advection factors.
-    THEN: The returned matrices A and B should have shape (nx, nx) and contain expected values along diagnols,
+    THEN: The returned matrices A and B should have shape (nx, nx) and contain expected values along diagonals,
           as required for the Crank-Nicolson method for the 1-D advection-diffusion equation.
           
     """
@@ -205,10 +205,10 @@ def test_create_matrices(params):
     assert B.shape == (nx, nx), f"B shape mismatch: {B.shape}"
     assert np.allclose(np.diag(A), 1 + r_diff), "A main diagonal incorrect"
     assert np.allclose(np.diag(B), 1 - r_diff), "B main diagonal incorrect"
-    assert np.allclose(np.diag(A, k=1), -0.5 * r_diff - 0.25 * r_adv), "A upper diagonal incorrect"
-    assert np.allclose(np.diag(A, k=-1), -0.5 * r_diff + 0.25 * r_adv), "A lower diagonal incorrect"
-    assert np.allclose(np.diag(B, k=1), 0.5 * r_diff + 0.25 * r_adv), "B upper diagonal incorrect"
-    assert np.allclose(np.diag(B, k=-1), 0.5 * r_diff - 0.25 * r_adv), "B lower diagonal incorrect"
+    assert np.allclose(np.diag(A, k=1), -0.5 * r_diff + 0.25 * r_adv), "A upper diagonal incorrect"
+    assert np.allclose(np.diag(A, k=-1), -0.5 * r_diff - 0.25 * r_adv), "A lower diagonal incorrect"
+    assert np.allclose(np.diag(B, k=1), 0.5 * r_diff - 0.25 * r_adv), "B upper diagonal incorrect"
+    assert np.allclose(np.diag(B, k=-1), 0.5 * r_diff + 0.25 * r_adv), "B lower diagonal incorrect"
 
 @pytest.mark.parametrize("nx", [2, 3, 5])
 @pytest.mark.parametrize("r_diff", [0.0, 0.1])
@@ -228,10 +228,10 @@ def test_create_matrices_edge_cases(nx, r_diff, r_adv):
     assert B.shape == (nx, nx), f"B shape mismatch: {B.shape}"
     assert np.allclose(np.diag(A), 1 + r_diff), "A main diagonal incorrect"
     assert np.allclose(np.diag(B), 1 - r_diff), "B main diagonal incorrect"
-    assert np.allclose(np.diag(A, k=1), -0.5 * r_diff - 0.25 * r_adv), "A upper diagonal incorrect"
-    assert np.allclose(np.diag(A, k=-1), -0.5 * r_diff + 0.25 * r_adv), "A lower diagonal incorrect"
-    assert np.allclose(np.diag(B, k=1), 0.5 * r_diff + 0.25 * r_adv), "B upper diagonal incorrect"
-    assert np.allclose(np.diag(B, k=-1), 0.5 * r_diff - 0.25 * r_adv), "B lower diagonal incorrect"
+    assert np.allclose(np.diag(A, k=1), -0.5 * r_diff + 0.25 * r_adv), "A upper diagonal incorrect"
+    assert np.allclose(np.diag(A, k=-1), -0.5 * r_diff - 0.25 * r_adv), "A lower diagonal incorrect"
+    assert np.allclose(np.diag(B, k=1), 0.5 * r_diff - 0.25 * r_adv), "B upper diagonal incorrect"
+    assert np.allclose(np.diag(B, k=-1), 0.5 * r_diff + 0.25 * r_adv), "B lower diagonal incorrect"
     
 @pytest.mark.parametrize("shape", [(3, 3), (5, 5), (10, 10)])
 def test_boundary_rows_modified_correctly(shape):
