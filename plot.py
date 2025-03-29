@@ -25,7 +25,7 @@ def plot_1d_solutions(x, u_numerical, u_analytical, nt, T, L, nx, D, velocity):
         velocity (float): Advection velocity.
         
     """
-    indices = [0, nt // 2, nt]  
+    indices = [0, nt // 2, nt - 1]  
     time_labels = ["t = 0", f"t = {T/2:.2f}", f"t = {T:.2f}"]  
     
     plt.figure(figsize=(10, 6))
