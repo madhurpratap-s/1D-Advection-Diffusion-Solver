@@ -85,6 +85,7 @@ def setup_gaussian_pulse(L, nx, x0=None, sigma=None):
 
     Returns:
         numpy.ndarray: Initial concentration profile.
+        
     """
     if x0 is None:
         x0 = L / 2  
@@ -104,23 +105,24 @@ def create_matrices(nx, r_diff, r_adv):
     Args:
         nx (int): Number of spatial grid points.
         r_diff (float): Diffusion number (D * dt / dx^2).
-        r_conv (float): Advection number (v * dt / dx).
+        r_adv (float): Advection number (v * dt / dx).
 
     Returns:
         tuple of numpy.ndarray: Matrices A and B used in the Crank-Nicolson 
         time-stepping scheme, where A is the left-hand side matrix and B is 
         the right-hand side matrix.
+        
     """
     # Main diagonals
     A_main = np.ones(nx) * (1 + r_diff)
     B_main = np.ones(nx) * (1 - r_diff)
 
-    # Upper and lower diagonals
-    A_upper = np.ones(nx - 1) * (-0.5 * r_diff - 0.25 * r_adv)  
-    A_lower = np.ones(nx - 1) * (-0.5 * r_diff + 0.25 * r_adv)  
+    # Upper and lower diagonals 
+    A_upper = np.ones(nx - 1) * (-0.5 * r_diff + 0.25 * r_adv)  
+    A_lower = np.ones(nx - 1) * (-0.5 * r_diff - 0.25 * r_adv)  
 
-    B_upper = np.ones(nx - 1) * (0.5 * r_diff + 0.25 * r_adv) 
-    B_lower = np.ones(nx - 1) * (0.5 * r_diff - 0.25 * r_adv)  
+    B_upper = np.ones(nx - 1) * (0.5 * r_diff - 0.25 * r_adv) 
+    B_lower = np.ones(nx - 1) * (0.5 * r_diff + 0.25 * r_adv)  
 
     # Construct matrices
     A = np.diag(A_main) + np.diag(A_upper, k=1) + np.diag(A_lower, k=-1)
@@ -138,6 +140,7 @@ def apply_boundary_conditions(A, B):
 
     Returns:
         tuple: Modified matrices A and B with boundary conditions applied.
+        
     """
     A[0, :] = 0
     A[0, 0] = 1
