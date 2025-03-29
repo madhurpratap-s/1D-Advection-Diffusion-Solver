@@ -1,4 +1,4 @@
-[simulation_paramters]
+[simulation_parameters]
 length = 10.0        
 total time = 2.0           
 nx = 401               

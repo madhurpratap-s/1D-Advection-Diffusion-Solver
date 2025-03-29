@@ -9,7 +9,7 @@ import configparser
 import argparse
 import numpy as np
 from functions import calculate_and_check_accuracy_factors, solve_advection_diffusion_CN, solve_advection_diffusion_analytical
-from plot import
+from plot import plot_1d_solutions, plot_3d_surface
 
 def process_configuration_file(config_file):
     """
@@ -46,12 +46,12 @@ def process_configuration_file(config_file):
     config = configparser.ConfigParser()
     config.read(config_file)
 
-    L = float(config.get('simulation_paramters', 'length'))
-    T = float(config.get('simulation_paramters', 'total time'))
-    nx = int(config.get('simulation_paramters', 'nx'))
-    nt = int(config.get('simulation_paramters', 'nt'))
-    D = float(config.get('simulation_paramters', 'diffusivity'))
-    velocity = float(config.get('simulation_paramters', 'velocity'))
+    L = float(config.get('simulation_parameters', 'length'))
+    T = float(config.get('simulation_parameters', 'total time'))
+    nx = int(config.get('simulation_parameters', 'nx'))
+    nt = int(config.get('simulation_parameters', 'nt'))
+    D = float(config.get('simulation_parameters', 'diffusivity'))
+    velocity = float(config.get('simulation_parameters', 'velocity'))
     
     calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity)
 
