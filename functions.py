@@ -39,8 +39,7 @@ def calculate_discretization(L, T, nx, nt):
 
 def calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity):
     """
-    Calculates the accuracy factors for the Crank-Nicolson method applied to the advection-diffusion equation
-    and checks whether they meet the guidelines for acccurate simulation.
+    Calculate and check if accuracy factors are consistent with guidelines.
 
     Args:
         L (float): Length of the domain.
@@ -52,12 +51,11 @@ def calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity):
 
     Returns:
         tuple: A tuple containing:
-            - r_diff (float): Diffusion accuracy factor (D * Δt / Δx²).
-            - r_adv (float): Advection accuracy factor (velocity * Δt / Δx).
+            - r_diff (float): Diffusion accuracy factor (D * dt / dx²).
+            - r_adv (float): Advection accuracy factor (velocity * dt / dx).
     
     Warns:
         UserWarning: If the accuracy conditions are not met (if r_diff > 0.5 or r_adv > 1.0).
-        
     """
     dx, dt = calculate_discretization(L, T, nx, nt)
 
@@ -70,8 +68,7 @@ def calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity):
         warnings.warn(f"Potential accuracy issue: r_adv={r_adv}. Recommended r_adv < 1.0 for accuracy.", UserWarning)
     
     return r_diff, r_adv
-
-        
+    
 def setup_gaussian_pulse(L, nx, x0=None, sigma=None):
     """
     Generates an initial Gaussian pulse distribution on a 1D grid.
@@ -79,13 +76,12 @@ def setup_gaussian_pulse(L, nx, x0=None, sigma=None):
     Args:
         L (float): Length of the domain.
         nx (int): Number of spatial steps.
-        x0 (float, optional): Center of the Gaussian pulse. Defaults to L/2.
+        x0 (float, optional): Center of the Gaussian pulse. Defaults to L/3.
         sigma (float, optional): Standard deviation (controls the width of the pulse). 
-                                 Defaults to L/20.
+                                 Defaults to L/10.
 
     Returns:
-        numpy.ndarray: Initial concentration profile.
-        
+        numpy.ndarray: Initial concentration profile.    
     """
     if x0 is None:
         x0 = L / 3  
@@ -99,19 +95,17 @@ def setup_gaussian_pulse(L, nx, x0=None, sigma=None):
 
 def create_matrices(nx, r_diff, r_adv):
     """
-    Creates matrices A and B for the Crank-Nicolson method used in solving 
-    the 1D advection-diffusion equation.
+    Calculate and return the matrices A and B for the Crank-Nicolson method.
  
     Args:
         nx (int): Number of spatial grid points.
-        r_diff (float): Diffusion number (D * dt / dx^2).
+        r_diff (float): Diffusion number (D * dt / dx²).
         r_adv (float): Advection number (v * dt / dx).
 
     Returns:
-        tuple of numpy.ndarray: Matrices A and B used in the Crank-Nicolson 
-        time-stepping scheme, where A is the left-hand side matrix and B is 
-        the right-hand side matrix.
-        
+        tuple: A tuple containing:
+            - A (numpy.ndarray): Left-hand side matrix for the C-N time-stepping scheme.
+            - B (numpy.ndarray): Right-hand side matrix for the C-N time-stepping scheme. 
     """
     # Main diagonals
     A_main = np.ones(nx) * (1 + r_diff)
@@ -120,7 +114,6 @@ def create_matrices(nx, r_diff, r_adv):
     # Upper and lower diagonals 
     A_upper = np.ones(nx - 1) * (-0.5 * r_diff + 0.25 * r_adv)  
     A_lower = np.ones(nx - 1) * (-0.5 * r_diff - 0.25 * r_adv)  
-
     B_upper = np.ones(nx - 1) * (0.5 * r_diff - 0.25 * r_adv) 
     B_lower = np.ones(nx - 1) * (0.5 * r_diff + 0.25 * r_adv)  
 
@@ -139,8 +132,7 @@ def apply_boundary_conditions(A, B):
         B (numpy.ndarray): Matrix B for the Crank-Nicolson method.
 
     Returns:
-        tuple: Modified matrices A and B with boundary conditions applied.
-        
+        tuple: Modified matrices A and B with boundary conditions applied.  
     """
     A[0, :] = 0
     A[0, 0] = 1
@@ -164,13 +156,12 @@ def solve_advection_diffusion_CN(L, T, nx, nt, D, velocity):
         nx (int): Number of spatial steps.
         nt (int): Number of time steps.
         D (float): Diffusivity coefficient of the medium.
-        velocity (float): Convection (advection) velocity.
+        velocity (float): Advection velocity.
 
     Returns:
-        Tuple[numpy.ndarray, numpy.ndarray]: 
+        tuple: A tuple containing:
             - x (numpy.ndarray): Spatial grid points of length `nx`.
-            - u (numpy.ndarray): Concentration profile of shape [nx, nt] over time.
-            
+            - u (numpy.ndarray): Concentration profile of shape [nx, nt] over time.   
     """
     r_diff, r_adv = calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity)
     x = np.linspace(0, L, nx)
@@ -207,18 +198,17 @@ def solve_advection_diffusion_analytical(L, T, nx, nt, D, velocity, x0=None, sig
         nx (int): Number of spatial points.
         nt (int): Number of time steps.
         D (float): Diffusivity coefficient.
-        velocity (float): Convection (advection) velocity.
+        velocity (float): Advection velocity.
         x0 (float, optional): Center of the initial Gaussian pulse. Defaults to L/3.
         sigma (float, optional): Width of the Gaussian pulse. Defaults to L/12.
         num_reflections (int, optional): Number of mirrored sources to consider (higher = more accurate).
     
     Returns:
-        tuple: (x, u)
+        tuple: A tuple containing:
             - x (numpy.ndarray): Spatial grid points.
             - u (numpy.ndarray): 2D solution array (shape: (nx, nt)), with each column representing a time step.
     Raises:
         ValueError: If num_reflections is less than 1.
-    
     """
     if num_reflections < 1:
         raise ValueError("num_reflections must be a positive integer (>= 1).")
