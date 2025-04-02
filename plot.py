@@ -23,7 +23,9 @@ def plot_1d_solutions(x, u_numerical, u_analytical, nt, T, L, nx, D, velocity):
         nx (int): Number of spatial discretization points.
         D (float): Diffusivity coefficient.
         velocity (float): Advection velocity.
-        
+    
+    Returns:
+        None: This function does not return any value. It only displays a plot.
     """
     indices = [0, nt // 2, nt - 1]  
     time_labels = ["t = 0", f"t = {T/2:.2f}", f"t = {T:.2f}"]  
@@ -35,7 +37,7 @@ def plot_1d_solutions(x, u_numerical, u_analytical, nt, T, L, nx, D, velocity):
     
     plt.xlabel("Spatial coordinate, x")
     plt.ylabel("Solution, u")
-    plt.title(f"1D Advection-Diffusion Solutions\n(Diffusivity = {D}, Velocity = {velocity})")
+    plt.title(f"1D Advection - Diffusion Solutions \n(Diffusivity = {D}, Velocity = {velocity})")
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
@@ -53,8 +55,10 @@ def plot_3d_surface(x, u_numerical, nt, T, L, nx, D, velocity):
         L (float): Length of the domain.
         nx (int): Number of spatial discretization points.
         D (float): Diffusivity coefficient.
-        velocity (float): Advection velocity.
-        
+        velocity (float): Advection velocity.    
+    
+    Returns:
+        None: This function does not return any value. It only displays a plot.
     """
     # Create a time array corresponding to each time step
     t = np.linspace(0, T, nt)
@@ -69,7 +73,7 @@ def plot_3d_surface(x, u_numerical, nt, T, L, nx, D, velocity):
     ax.set_xlabel('Spatial coordinate, x')
     ax.set_ylabel('Time, t')
     ax.set_zlabel('Solution, u')
-    ax.set_title(f"Surface Plot of Numerical Solution\n(Diffusivity = {D}, Velocity={velocity})")
+    ax.set_title(f"Surface Plot of Numerical Solution \n(Diffusivity = {D}, Velocity={velocity})")
     fig.colorbar(surf, shrink=0.5, aspect=5)
     plt.tight_layout()
     plt.show()
