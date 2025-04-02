@@ -88,9 +88,9 @@ def setup_gaussian_pulse(L, nx, x0=None, sigma=None):
         
     """
     if x0 is None:
-        x0 = L / 2  
+        x0 = L / 3  
     if sigma is None:
-        sigma = L / 20  
+        sigma = L / 10  
         
     dx, dt = calculate_discretization(L, T=1.0, nx=nx, nt=5) # Use dummy T and any nt > 2
     x = np.linspace(0, (nx - 1) * dx, nx)
@@ -228,9 +228,9 @@ def solve_advection_diffusion_analytical(L, T, nx, nt, D, velocity, x0=None, sig
 
     # Set default Gaussian pulse parameters
     if x0 is None:
-        x0 = L / 2
+        x0 = L / 3
     if sigma is None:
-        sigma = L / 20
+        sigma = L / 10
 
     u = np.zeros((nx, nt))
 
