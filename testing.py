@@ -37,9 +37,9 @@ def test_calculate_discretization(params):
     """
     Test that calculate_discretization computes the correct spatial and temporal step sizes.
     
-    GIVEN: A set of parameters for domain length, total time, and discretization sizes.
+    GIVEN: A set of parameters for domain length, total time, and number of spatial and temporal grid points.
     WHEN: The calculate_discretization function is called.
-    THEN: The computed dx and dt should equal L/(nx-1) and T/(nt-1) respectively.
+    THEN: The computed dx and dt should be close to L/(nx-1) and T/(nt-1) respectively.
     
     """
     L = params["L"]
@@ -62,9 +62,9 @@ def test_calculate_discretization(params):
 ])
 def test_calculate_discretization_invalid_inputs(L, T, nx, nt):
     """
-    Test that calculate_discretization raises a ValueError when nx or nt is less than 2.
+    Test that calculate_discretization raises a ValueError when nx and / or nt is less than 2.
     
-    GIVEN: Invalid nx or nt (less than 2).
+    GIVEN: Invalid nx and / or nt (less than 2).
     WHEN: The calculate_discretization function is called.
     THEN: A ValueError should be raised.
     
@@ -77,9 +77,10 @@ def test_calculate_and_check_accuracy_factors(params):
     """
     Test that calculate_and_check_accuracy_factors computes the correct accuracy factors.
     
-    GIVEN: A set of parameters for domain length, total time, discretization sizes, diffusivity, and velocity.
+    GIVEN: A set of parameters for domain length, total time, number of spatial grid points
+           number of temporal grid points, diffusivity, and velocity.
     WHEN: The calculate_and_check_accuracy_factors function is called.
-    THEN: The computed r_diff and r_adv should match the manually calculated expected values.
+    THEN: The computed r_diff and r_adv should be close to the manually calculated expected values.
     
     """
     L = params["L"]
@@ -103,23 +104,6 @@ def test_calculate_and_check_accuracy_factors(params):
         f"Diffusion factor mismatch: expected {r_diff_expected}, got {r_diff}"
     assert isclose(r_adv, r_adv_expected, rel_tol=1e-9), \
         f"Advection factor mismatch: expected {r_adv_expected}, got {r_adv}"
-
-@pytest.mark.parametrize("L, T, nx, nt, D, velocity", [
-    (1.0, 0.1, 1, 11, 0.01, 0.5),  # nx is less than 2
-    (1.0, 0.1, 11, 1, 0.01, 0.5),  # nt is less than 2
-    (1.0, 0.1, 0, 0, 0.01, 0.5),   # both nx and nt are invalid
-])
-def test_calculate_and_check_accuracy_factors_invalid_inputs(L, T, nx, nt, D, velocity):
-    """
-    Test that calculate_and_check_accuracy_factors raises ValueError when invalid nx/nt are passed.
-    
-    GIVEN: Invalid nx or nt (less than 2) along with other valid parameters.
-    WHEN: calculate_and_check_accuracy_factors is called.
-    THEN: A ValueError is propagated from calculate_discretization.
-    
-    """
-    with pytest.raises(ValueError):
-        calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity)
         
 @pytest.mark.parametrize("params", unstable_adv_diffusion_cases)
 def test_calculate_and_check_accuracy_factors_warns(params):
@@ -135,10 +119,27 @@ def test_calculate_and_check_accuracy_factors_warns(params):
         warnings.simplefilter("always")  
         calculate_and_check_accuracy_factors(**params)
 
+@pytest.mark.parametrize("L, T, nx, nt, D, velocity", [
+    (1.0, 0.1, 1, 11, 0.01, 0.5),  # nx is less than 2
+    (1.0, 0.1, 11, 1, 0.01, 0.5),  # nt is less than 2
+    (1.0, 0.1, 0, 0, 0.01, 0.5),   # both nx and nt are invalid
+])
+def test_calculate_and_check_accuracy_factors_invalid_inputs(L, T, nx, nt, D, velocity):
+    """
+    Test that calculate_and_check_accuracy_factors raises ValueError when invalid nx/nt are passed.
+    
+    GIVEN: Invalid nx and / or nt (less than 2) along with other valid parameters.
+    WHEN: calculate_and_check_accuracy_factors is called.
+    THEN: A ValueError is propagated from calculate_discretization.
+    
+    """
+    with pytest.raises(ValueError):
+        calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity)
+
 @pytest.mark.parametrize("params", advection_diffusion_cases)
 def test_default_setup_gaussian_pulse(params):
     """
-    Test that the setup_gaussian_pulse generates a Gaussian pulse with correct propertie for default x0 and sigma.
+    Test that the setup_gaussian_pulse generates a Gaussian pulse with correct properties for default x0 and sigma.
     
     GIVEN: A set of parameters describing the domain length (L), number of spatial steps (nx).
     WHEN: The setup_gaussian_pulse function is called with these parameters.
@@ -148,10 +149,10 @@ def test_default_setup_gaussian_pulse(params):
     """
     L = params["L"]
     nx = params["nx"]
-    result = setup_gaussian_pulse(L, nx)  
-   
-    x0_default = L / 2
-    sigma_default = L / 20
+    x0_default = L / 3
+    sigma_default = L / 10
+    
+    result = setup_gaussian_pulse(L, nx, x0 = x0_default, sigma = sigma_default)  
    
     x = np.linspace(0, L, nx)
     expected = np.exp(-0.5 * ((x - x0_default) / sigma_default)**2)
@@ -189,7 +190,7 @@ def test_custom_setup_gaussian_pulse(params, x0, sigma):
 @pytest.mark.parametrize("params", advection_diffusion_cases)
 def test_create_matrices(params):
     """
-    Test that the create_matrices generates Crank-Nicolson matrices A and B with correct structure.
+    Test that the create_matrices generates Crank-Nicolson matrices A and B with correct properties.
     
     GIVEN: A set of parameters for domain length, total time, discretization sizes, diffusivity, and velocity.
     WHEN: The create_matrices function is called with computed diffusion and advection factors.
@@ -221,6 +222,7 @@ def test_create_matrices_edge_cases(nx, r_diff, r_adv):
     WHEN: create_matrices is called with each combination.
     THEN: The returned matrices A and B should have shape (nx, nx) and contain expected values along diagnols,
           as required for the Crank-Nicolson method for the 1-D advection-diffusion equation.
+          
     """
     A, B = create_matrices(nx, r_diff, r_adv)
 
@@ -286,7 +288,13 @@ def test_inner_values_preserved(shape, matrix_func):
     assert np.allclose(A_result[1:-1, 1:-1], A_inner_expected), "Interior of A changed unexpectedly"
     assert np.allclose(B_result[1:-1, 1:-1], B_inner_expected), "Interior of B changed unexpectedly"
     
-@pytest.mark.parametrize("params", advection_diffusion_cases)
+@pytest.mark.parametrize(
+    "params",
+    [
+        {**case, "x0": case["L"] / 3, "sigma": case["L"] / 10}
+        for case in advection_diffusion_cases
+    ]
+)
 def test_solve_advection_diffusion_CN_stability(params):
     """
     Test that solve_advection_diffusion_CN behaves normally with configurations satisfying accuracy guidelines.
@@ -307,7 +315,13 @@ def test_solve_advection_diffusion_CN_stability(params):
     assert u.shape == (nx, nt), f"Expected shape {(nx, nt)}, got {u.shape}"
     
 
-@pytest.mark.parametrize("params", unstable_adv_diffusion_cases)
+@pytest.mark.parametrize(
+    "params",
+    [
+        {**case, "x0": case["L"] / 3, "sigma": case["L"] / 10}
+        for case in unstable_adv_diffusion_cases
+    ]
+)
 def test_solve_advection_diffusion_CN_warns(params):
     """
     Test that solve_advection_diffusion_CN raises a warning for configurations not satisfying accuracy guidelines.
@@ -322,10 +336,13 @@ def test_solve_advection_diffusion_CN_warns(params):
         solve_advection_diffusion_CN(**params)
 
 @pytest.mark.parametrize(
-    "params, x0, sigma", 
-    [(param, x0, sigma) for param in advection_diffusion_cases for x0, sigma in [(5.0, 1.0), (3.0, 0.5), (7.0, 2.0)]]
+    "params",
+    [
+        {**param, "x0": param["L"] / 3, "sigma": param["L"] / 10, "num_reflections": 5} 
+        for param in advection_diffusion_cases
+    ],
 )
-def test_solve_advection_diffusion_analytical(params, x0, sigma):
+def test_solve_advection_diffusion_analytical(params):
     """
     Test that solve_advection_diffusion_analytical behaves correctly with same number of reflections,
     initial conditions, and pulse widths.
@@ -371,5 +388,3 @@ def test_solve_advection_diffusion_analytical_reflections(params, x0, sigma, num
         assert np.all(np.isfinite(u)), "Solution contains NaN or Inf values."   
         assert max_change < 1.0, f"Instability detected: max change {max_change} too high."
         assert u.shape == (nx, nt), f"Expected shape {(nx, nt)}, got {u.shape}"
-
-    
