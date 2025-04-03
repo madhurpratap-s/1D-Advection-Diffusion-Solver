@@ -33,8 +33,9 @@ def process_configuration_file(config_file):
         2. Calculates and checks if the accuracy factors r_diff and r_adv meet accuracy guidelines.
         3. Computes both numerical and analytical solutions based on the provided parameters.
         4. Saves the computed solutions to the specified paths.
-        5. Displays plots comparing the numerical and analytical solutions.
-    
+        5. Plots the 1D solutions of numerical and analytical methods together for comparison.
+        6. Creates a 3D surface plot of the numerical solution over space and time.   
+        
     Warns:
         UserWarning: If the accuracy conditions are not met (if r_diff > 0.5 or r_adv > 1.0).
 
@@ -42,16 +43,27 @@ def process_configuration_file(config_file):
         ValueError: If nx or nt are less than 2, as they must represent valid discretization parameters.
         ValueError: If num_reflections is less than 1 in solve_advection_diffusion_analytical.
     """
-
     config = configparser.ConfigParser()
     config.read(config_file)
-
+        
     L = float(config.get('simulation_parameters', 'length'))
     T = float(config.get('simulation_parameters', 'total time'))
     nx = int(config.get('simulation_parameters', 'nx'))
     nt = int(config.get('simulation_parameters', 'nt'))
     D = float(config.get('simulation_parameters', 'diffusivity'))
     velocity = float(config.get('simulation_parameters', 'velocity'))
+    if 'num_reflections' in config['simulation_parameters']:
+        num_reflections = int(config['simulation_parameters']['num_reflections'])
+    else:
+        num_reflections = 5  
+    if 'x0' in config['simulation_parameters']:
+        x0 = float(config['simulation_parameters']['x0'])
+    else:
+        x0 = None
+    if 'sigma' in config['simulation_parameters']:
+       sigma = float(config['simulation_parameters']['sigma'])
+    else:
+       sigma = None
     
     calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity)
 
@@ -60,8 +72,8 @@ def process_configuration_file(config_file):
 
     print(f"Running simulation with nx={nx}, nt={nt}")
     
-    x, u_numerical = solve_advection_diffusion_CN(L, T, nx, nt, D, velocity)
-    x, u_analytical = solve_advection_diffusion_analytical(L, T, nx, nt, D, velocity)
+    x, u_numerical = solve_advection_diffusion_CN(L, T, nx, nt, D, velocity, x0, sigma)
+    x, u_analytical = solve_advection_diffusion_analytical(L, T, nx, nt, D, velocity, x0, sigma, num_reflections)
 
     np.save(numerical_solution_path, u_numerical)
     np.save(analytical_solution_path, u_analytical)
