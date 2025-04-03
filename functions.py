@@ -77,8 +77,7 @@ def setup_gaussian_pulse(L, nx, x0=None, sigma=None):
         L (float): Length of the domain.
         nx (int): Number of spatial steps.
         x0 (float, optional): Center of the Gaussian pulse. Defaults to L/3.
-        sigma (float, optional): Standard deviation (controls the width of the pulse). 
-                                 Defaults to L/10.
+        sigma (float, optional): Standard deviation. Defaults to L/10.
 
     Returns:
         numpy.ndarray: Initial concentration profile.    
@@ -146,7 +145,7 @@ def apply_boundary_conditions(A, B):
 
     return A, B
 
-def solve_advection_diffusion_CN(L, T, nx, nt, D, velocity):
+def solve_advection_diffusion_CN(L, T, nx, nt, D, velocity, x0, sigma):
     """
     Solves the 1D advection-diffusion equation using the Crank-Nicolson method.
 
@@ -157,6 +156,8 @@ def solve_advection_diffusion_CN(L, T, nx, nt, D, velocity):
         nt (int): Number of time steps.
         D (float): Diffusivity coefficient of the medium.
         velocity (float): Advection velocity.
+        x0 (float, optional): Center of the initial Gaussian pulse. Defaults to L/3.
+        sigma (float, optional): Std. Dev. of the initial Gaussian Pulse. Defaults to L/10.
 
     Returns:
         tuple: A tuple containing:
@@ -166,7 +167,7 @@ def solve_advection_diffusion_CN(L, T, nx, nt, D, velocity):
     r_diff, r_adv = calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity)
     x = np.linspace(0, L, nx)
     u = np.zeros((nx, nt))
-    u[:, 0] = setup_gaussian_pulse(L, nx)
+    u[:, 0] = setup_gaussian_pulse(L, nx, x0 = x0, sigma = sigma)
 
     # Apply Dirichlet boundary condition to solution array
     u[0, :] = 0
@@ -184,7 +185,7 @@ def solve_advection_diffusion_CN(L, T, nx, nt, D, velocity):
 
     return x, u
 
-def solve_advection_diffusion_analytical(L, T, nx, nt, D, velocity, x0=None, sigma=None, num_reflections=5):
+def solve_advection_diffusion_analytical(L, T, nx, nt, D, velocity, x0, sigma, num_reflections = 5):
     """
     Solves the 1D advection-diffusion equation analytically for a finite domain.
 
@@ -200,8 +201,8 @@ def solve_advection_diffusion_analytical(L, T, nx, nt, D, velocity, x0=None, sig
         D (float): Diffusivity coefficient.
         velocity (float): Advection velocity.
         x0 (float, optional): Center of the initial Gaussian pulse. Defaults to L/3.
-        sigma (float, optional): Width of the Gaussian pulse. Defaults to L/12.
-        num_reflections (int, optional): Number of mirrored sources to consider (higher = more accurate).
+        sigma (float, optional): Std. Dev. of the initial Gaussian Pulse. Defaults to L/10.
+        num_reflections (int, optional): Number of mirrored sources to consider. Defaults to 5.
     
     Returns:
         tuple: A tuple containing:
