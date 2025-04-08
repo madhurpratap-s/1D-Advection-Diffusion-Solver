@@ -17,6 +17,7 @@ def process_configuration_file(config_file):
 
     Args:
         config_file (str): The path to the configuration file in INI format. The file should contain the following sections:
+            
             - [simulation_paramters]: Contains the simulation parameters.
                 - length (float): Length of the spatial domain.
                 - nx (int): Number of spatial discretization points.
@@ -24,6 +25,10 @@ def process_configuration_file(config_file):
                 - nt (int): Number of time steps for the simulation.
                 - alpha (float): Diffusivity coefficient.
                 - velocity (float): Advection velocity.
+                - x0 (float, optional): Initial center of the Gaussian pulse. Defaults to length / 3.
+                - sigma (float, optional): Standard deviation of the initial Gaussian pulse. Defaults to length / 10.
+                - num_reflections (int, optional): Number of mirrored sources to consider. Defaults to 5.
+                
             - [paths]: Specifies file paths for storing solutions.
                 - numerical_solution (str): Path to save the numerical solution (in .npy format).
                 - analytical_solution (str): Path to save the analytical solution (in .npy format).
