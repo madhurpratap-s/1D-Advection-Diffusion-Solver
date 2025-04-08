@@ -1,57 +1,72 @@
-# 1-D Advection-Diffusion Equation Solver
-
-This repository contains a Python implementation of a **1-D Advection-Diffusion equation solver** that uses the **Crank-Nicolson method**. The solver computes the numerical solution for a given configuration and visualizes it with the analytical solution obtained using the **Gaussian Mirror Method** for comparison.
-___
-## 1-D Advection-Diffusion Equation 
+# 1-D Advection-Diffusion Equation 
 
 The 1-D advection-diffusion equation is a parabolic partial differential equation that is given by:
 
-![image](https://github.com/user-attachments/assets/8b2b9526-c192-4574-9ed6-f255072af089)
+![image](https://github.com/user-attachments/assets/58495813-1e3e-4b96-87de-cffb3186db5e)
 
 where:
 
-- \( u(x,t) \) is the scalar quantity being transported,
-- \( v \) is the advection velocity,
-- \( D \) is the diffusivity coefficient.
+- **u(x, t)** is the scalar quantity being transported,
+- **v** is the advection velocity,
+- **D** is the diffusivity coefficient.
 
-This equation describes the transport of a substance in a medium where both **advection** (transport due to bulk motion) and **diffusion** (spreading due to random motion).phenomoneon are happening together.
-
+This equation describes the transport of a substance in a medium where both **advection** (transport due to bulk motion) and **diffusion** (spreading due to random motion) phenomoneon are happening simulateneously.
+___
 ## Crank-Nicolson Method 
 
-The **Crank-Nicolson method** is an implicit finite difference scheme that is unconditionally stable, meaning the numerical solution won’t blow up. However, stability alone doesn’t guarantee a physically meaningful solution — especially when advection is involved. This is addressed in the code through calculation of accuracy factors whose values can serve as guidelines for the user in defining the simulation parameters in configuration.txt.
+The **Crank-Nicolson method** is an implicit finite difference scheme that is unconditionally stable, meaning the numerical solution won’t blow up. However, stability alone doesn’t guarantee a physically meaningful solution, especially when advection is involved. The value of accuracy factors (r_diff and r_adv) can serve as guidelines for the user in defining the simulation parameters in configuration.txt.   
 
-The Crank-Nicolson method uses a time-centered difference to discretize the equation:
+The inital distribution of matter is modeled as a Gaussian pulse:
 
-\[
-\frac{u_i^{n+1} - u_i^n}{\Delta t} + v \frac{u_{i+1}^{n+1} - u_{i-1}^{n+1} + u_{i+1}^{n} - u_{i-1}^{n}}{4 \Delta x} = D \frac{u_{i+1}^{n+1} - 2u_i^{n+1} + u_{i-1}^{n+1} + u_{i+1}^{n} - 2u_i^{n} + u_{i-1}^{n}}{2 \Delta x^2}
-\]
+![image](https://github.com/user-attachments/assets/ade100dd-2d15-4e69-b892-950fa0e68f11)
 
-This leads to a **tridiagonal system of equations** that can be solved efficiently using the Thomas algorithm.
+Homogeneous Dirichlet boundary conditions are applied which enforce: 
 
-## Analytical Solution Using the Gaussian Mirror Method
+![image](https://github.com/user-attachments/assets/daebeb1b-8ee1-4f91-8409-42547aa3431f)
 
-The **Gaussian Mirror Method** provides an analytical solution to the **1D Advection-Diffusion Equation** for a finite domain by considering mirrored image sources.
+Physically, this means that the concentration of matter that is being transported is **fixed at zero** at both ends of the domain for all times.
 
-### 🔢 Mathematical Formulation
+The spatial domain [0, L] and time domain [0, T] are divided into nx grid points and nx time steps respectively and then corresponding step sizes dx and dt are calculated. The discretization of the 1D advection-diffusion equation using the Crank-Nicolson method is then given as:
 
-For an initial Gaussian pulse centered at \( x_0 \) with standard deviation \( \sigma \), the free-space solution for the advection-diffusion equation is:
+![image](https://github.com/user-attachments/assets/c9baab12-484b-4965-a54f-ae2d47eefdf2)
 
-\[
-u(x,t) = \frac{\sigma}{\sqrt{\sigma^2 + 2Dt}} \exp\left( - \frac{(x - (x_0 + vt))^2}{2 (\sigma^2 + 2Dt)} \right)
-\]
+with the coefficients:
 
-However, in a **finite domain** with **Dirichlet boundary conditions**, the **Gaussian Mirror Method** accounts for boundaries by summing over reflected images of the Gaussian pulse:
+a_c = 1 + r_diff  
+a_l = -0.5 r_diff - 0.25 r_adv  
+a_u = -0.5 r_diff + 0.25 r_adv  
+b_c = 1 - r_diff  
+b_l = 0.5 r_diff + 0.25 r_adv  
+b_u = 0.5 r_diff - 0.25 r_adv
 
-\[
-u(x,t) = \sum_{n=-N}^{N} \frac{\sigma}{\sqrt{\sigma^2 + 2Dt}} \exp\left( - \frac{(x - (x_0 + vt) - 2nL)^2}{2 (\sigma^2 + 2Dt)} \right)
-\]
+and the accuracy factors:
 
-where:
+r_diff = D * dt / dx²  
+r_adv = v * dt / dx
 
-- \( L \) is the domain length,
-- \( v \) is the advection velocity,
-- \( D \) is the diffusion coefficient,
-- \( n \) represents the mirrored reflections,
-- \( N \) is the number of reflections considered.
+The equation can also be written in matrix form as:
 
-As \( N \to \infty \), this summation enforces the correct boundary conditions while preserving the Gaussian profile's evolution.
+![image](https://github.com/user-attachments/assets/f1363ff1-c727-4d60-9bf5-bebf7d00e6f6)
+
+where A and B are tridiagnol matrices of size **nx X nx** with Dirichlet boundary conditions applied: 
+
+(Insert matrices A and B here later on)
+___
+## Analytical Solution 
+
+The 1D Advection-Diffusion equation can be solved analytically by summing over a series of mirrored Gaussian pulses. The solution is expressed as:
+
+![image](https://github.com/user-attachments/assets/f5128070-7d50-4f4b-8a79-3a8c7a548c5c)
+
+Where:
+
+**𝜎** is the standard deviation of the initial Gaussian pulse.
+**𝐷** is the diffusivity coefficient.
+**𝑣** is the advection velocity.
+**𝐿** is the length of the spatial domain.
+**𝑡** is the time.
+**𝑥₀** is the initial center of the Gaussian pulse.
+
+The term **2m𝐿** accounts for the mirrored reflections across the boundaries.
+
+# Project Structure 
