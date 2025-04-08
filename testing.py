@@ -112,7 +112,7 @@ def test_calculate_and_check_accuracy_factors_warns(params):
     
     GIVEN: A set of numerically unstable parameters for the advection-diffusion equation.
     WHEN: check_accuracy_guidelines is called.
-    THEN: Warning should be raised indicating instability and accuracy issues.
+    THEN: Warning should be raised indicating potential instability and accuracy issues.
     
     """
     with warnings.catch_warnings(record=True):
@@ -238,6 +238,9 @@ def test_create_matrices_edge_cases(nx, r_diff, r_adv):
 @pytest.mark.parametrize("shape", [(3, 3), (5, 5), (10, 10)])
 def test_boundary_rows_modified_correctly(shape):
     """
+    Test that apply_boundary_conditions correctly zeros first and last rows of A and B matrices 
+    except (0,0) and (-1,-1) elements.
+    
     GIVEN: A and B matrices of different sizes with all elements equal to one.
     WHEN: apply_boundary_conditions is called.
     THEN: First and last rows should be zeroed out, except (0,0) and (-1,-1) which should be 1.
@@ -260,6 +263,8 @@ def test_boundary_rows_modified_correctly(shape):
 @pytest.mark.parametrize("matrix_func", ["eye", "zeros", "rand"])
 def test_inner_values_preserved(shape, matrix_func):
     """
+    Test that apply_boundary_conditions does not change the interior of A and B matrices.
+    
     GIVEN: A and B matrices initialized with various inner values.
     WHEN: apply_boundary_conditions is called.
     THEN: The interior of the matrices should remain unchanged.
