@@ -12,7 +12,7 @@ def calculate_discretization(L, T, nx, nt):
     """
     Calculates spatial and temporal step sizes.
     
-    This function computes the step sizes based on the provided domain length, total simulation time, 
+    This function computes the step sizes based on the provided domain length (L), total simulation time (T), 
     number of spatial steps (nx), and number of time steps (nt).
 
     Args:
@@ -39,7 +39,7 @@ def calculate_discretization(L, T, nx, nt):
 
 def calculate_and_check_accuracy_factors(L, T, nx, nt, D, velocity):
     """
-    Calculate and check if accuracy factors are consistent with guidelines.
+    Calculates and checks if accuracy factors are consistent with guidelines.
 
     Args:
         L (float): Length of the domain.
@@ -94,7 +94,7 @@ def setup_gaussian_pulse(L, nx, x0=None, sigma=None):
 
 def create_matrices(nx, r_diff, r_adv):
     """
-    Calculate and return the matrices A and B for the Crank-Nicolson method.
+    Calculates and returns the matrices A and B for the Crank-Nicolson method.
  
     Args:
         nx (int): Number of spatial grid points.
@@ -127,11 +127,13 @@ def apply_boundary_conditions(A, B):
     Applies homogeneous Dirichlet boundary conditions to matrices A and B.
 
     Args:
-        A (numpy.ndarray): Matrix A for the Crank-Nicolson method.
-        B (numpy.ndarray): Matrix B for the Crank-Nicolson method.
+        A (numpy.ndarray): Left-hand side matrix for the Crank-Nicolson method.
+        B (numpy.ndarray): Right-hand side matrix for the Crank-Nicolson method.
 
     Returns:
-        tuple: Modified matrices A and B with boundary conditions applied.  
+        tuple: A tuple containing:
+            - A (numpy.ndarray): Modified left-hand side matrix with boundary conditions applied.
+            - B (numpy.ndarray): Modified right-hand side matrix with boundary conditions applied.
     """
     A[0, :] = 0
     A[0, 0] = 1
