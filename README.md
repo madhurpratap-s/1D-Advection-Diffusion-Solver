@@ -2,7 +2,7 @@
 
 The 1-D advection-diffusion equation is a parabolic partial differential equation that is given by:
 
-![image](https://github.com/user-attachments/assets/58495813-1e3e-4b96-87de-cffb3186db5e)
+![image](https://github.com/user-attachments/assets/330bd080-156e-4205-a7df-fbd5ab97a4fa)
 
 where:
 
