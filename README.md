@@ -69,5 +69,22 @@ Where:
 **𝑥₀** is the initial center of the Gaussian pulse.
 
 The term **2m𝐿** accounts for the mirrored reflections across the boundaries.
+___
 
-# Project Structure 
+# Project Execution and Structure 
+
+These are the steps to be followed to execute the program and get plotted results:
+
+1. The user defines the simulation parameters in the [configuration.txt](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/configuration.txt) file based on its given syntax or can use the pre-defined values. Note that the parameters: length, total_time, nx, nt, diffusivity and velocity are required by the program to run while the parameters: x0, sigma and num_reflections are optional. The local paths to the folders where the solutions are saved must be defined in the configuration file.
+2. To start the solver, the user has to run [run_solver.py](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/run_solver.py) which imports the simulation parameters from [configuration.txt](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/configuration.txt) by default using ConfigParser library. Note that it is possible to use a different file name than **configuration.txt** for the configuration file but the user has to specify the file name when launching the solver from the command line with the syntax ***"python run_solver.py custom_config.txt"***. If the user does not mention the name of the new file, the solver will read the simulation parameters from [configuration.txt](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/configuration.txt) only. 
+3. The analytical and numerical solutions are saved at the paths defined in the configuration file. The 1-D plot appears first comparing the numerical and analytical solutions over the same grid. The user can manually save the plot if desired. Closing that plot causes the 3D surface plot to appear showing the evolution of the numerical solution through space and time. Snapshots of the 3D solution can be saved from any desired perspective by adjusting the azimuthal and elevation angles to achieve the preferred viewpoint.
+
+This is how I divided the project into blocks:
+
+- In [functions.py](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/functions.py), I have built the functions needed for calculating discretization, calculating and checking accuracy factors as per guidelines, setting up inital gaussian pulse, creating matrices for C-N method, applying homogeneous dirichlet boundary conditions and solving the 1-D Advection-Diffusion equation numerically using the Crank-Nicolson method and analytically by summing over a series of mirrored Gaussian pulses.
+- In [testing.py](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/testing.py), I have tested all the functions in functions.py to ensure that they work as expected.
+- In [configuration.txt](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/configuration.txt), I have pre-defined the simulation parameters needed for the program to run as well as the local paths where the numerical and analytical solution will be saved.
+- In [run_solver.py](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/run_solver.py), this is the heart of the project that needs to be executed by the user. Here, the simulation parameters are extracted from the chosen configuration file, accuracy conditions are checked, and both numerical and analytical solutions are computed and saved. In the end, a 1D comparison plot and a 3D surface plot of the numerical solution are generated.
+- In [plot.py](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/plot.py), there are the two functions that respectively plot the time evolution of the initial gaussian distribution as per the numerical and analytical solution for comparison and make the 3D surface plot of the numerical solution over space and time.
+
+[I will add results below.]
