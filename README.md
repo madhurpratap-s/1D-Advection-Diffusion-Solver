@@ -68,6 +68,7 @@ where A and B are tridiagnol matrices of size **nx X nx** with Dirichlet boundar
   <img src="https://github.com/user-attachments/assets/9310458a-57d7-4f35-8b2a-bc4a8197052b" alt="Your Image">
 </p>
 ___
+
 ## Analytical Solution 
 
 The 1D Advection-Diffusion equation can be solved analytically by summing over a series of mirrored Gaussian pulses. The solution is expressed as:
