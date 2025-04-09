@@ -20,11 +20,15 @@ The **Crank-Nicolson method** is an implicit finite difference scheme that is un
 
 The inital distribution of matter is modeled as a Gaussian pulse:
 
-![image](https://github.com/user-attachments/assets/a8e2fc98-99b8-4755-b3f9-29ebb1393be3)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a8e2fc98-99b8-4755-b3f9-29ebb1393be3" alt="Your Image">
+</p>
 
 Homogeneous Dirichlet boundary conditions are applied which enforce: 
 
-![image](https://github.com/user-attachments/assets/ce756ad6-e50c-4c46-b293-ff9f1b0ba30c)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/ce756ad6-e50c-4c46-b293-ff9f1b0ba30c" alt="Your Image">
+</p>
 
 Physically, this means that the concentration of matter that is being transported is **fixed at zero** at both ends of the domain for all times.
 
