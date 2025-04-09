@@ -34,7 +34,9 @@ Physically, this means that the concentration of matter that is being transporte
 
 The spatial domain [0, L] and time domain [0, T] are divided into nx grid points and nx time steps respectively and then corresponding step sizes dx and dt are calculated. The discretization of the 1D advection-diffusion equation using the Crank-Nicolson method is then given as:
 
-![image](https://github.com/user-attachments/assets/379c4acb-b35e-4cdb-aea9-92e766f95ad6)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/379c4acb-b35e-4cdb-aea9-92e766f95ad6" alt="Your Image">
+</p>
 
 with the coefficients:
 
@@ -52,17 +54,27 @@ r_adv = v * dt / dx
 
 The equation can also be written in matrix form as:
 
-![image](https://github.com/user-attachments/assets/c5137e32-98ea-4887-8376-8592691a880c)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c5137e32-98ea-4887-8376-8592691a880c" alt="Your Image">
+</p>
 
 where A and B are tridiagnol matrices of size **nx X nx** with Dirichlet boundary conditions applied: 
 
-(Insert matrices A and B here later on)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/f7956758-5dfb-4880-afcc-90bb6fbbf186" alt="Your Image">
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/9310458a-57d7-4f35-8b2a-bc4a8197052b" alt="Your Image">
+</p>
 ___
 ## Analytical Solution 
 
 The 1D Advection-Diffusion equation can be solved analytically by summing over a series of mirrored Gaussian pulses. The solution is expressed as:
 
-![image](https://github.com/user-attachments/assets/1dfec78b-7f25-4907-8fb5-e28b2b7ecb72)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/1dfec78b-7f25-4907-8fb5-e28b2b7ecb72" alt="Your Image">
+</p>
 
 Where:
 
