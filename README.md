@@ -87,4 +87,14 @@ This is how I divided the project into blocks:
 - In [run_solver.py](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/run_solver.py), this is the heart of the project that needs to be executed by the user. Here, the simulation parameters are extracted from the chosen configuration file, accuracy conditions are checked, and both numerical and analytical solutions are computed and saved. In the end, a 1D comparison plot and a 3D surface plot of the numerical solution are generated.
 - In [plot.py](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/plot.py), there are the two functions that respectively plot the time evolution of the initial gaussian distribution as per the numerical and analytical solution for comparison and make the 3D surface plot of the numerical solution over space and time.
 
-[I will add results below.]
+To show the results based on the current [configuration.txt](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/configuration.txt):
+
+1. **Plot comparing the time evolution of the initial distribution as per the numerical and analytical solution.**
+
+Note that the advection phenomenon is apparent by the displacement of the inital gaussian distribution while the diffusion phenomenon can be observed in the form of broadening of the peaks over time along with reduction of the peak value.
+
+![1D Advection-Diffusion Solution](./plots/1d_solution.png)
+
+2. **3D surface plot of the numerical solution over space and time.**
+
+![1D Advection-Diffusion Solution](./plots/3d_solution.png)
