@@ -60,6 +60,22 @@ The equation can also be written in matrix form as:
 
 where A and B are tridiagnol matrices of size **nx X nx** with Dirichlet boundary conditions applied: 
 
+### Matrix A:
+a_c	a_u	0	...	0
+a_l	a_c	a_u	...	0
+0	a_l	a_c	...	0
+...	...	...	...	...
+0	0	0	...	a_c
+0	0	0	...	a_l
+
+### Matrix B:
+b_c	b_u	0	...	0
+b_l	b_c	b_u	...	0
+0	b_l	b_c	...	0
+...	...	...	...	...
+0	0	0	...	b_c
+0	0	0	...	b_l
+
 <p align="center">
   <img src="https://github.com/user-attachments/assets/f7956758-5dfb-4880-afcc-90bb6fbbf186" alt="Your Image">
 </p>
