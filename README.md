@@ -16,7 +16,7 @@ This equation describes the transport of a substance in a medium where both **ad
 ___
 ## Crank-Nicolson Method 
 
-The **Crank-Nicolson method** is an implicit finite difference scheme that is unconditionally stable, meaning the numerical solution won’t blow up. However, stability alone doesn’t guarantee a physically meaningful solution, especially when advection is involved. The value of accuracy factors (r_diff and r_adv) can serve as guidelines for the user in defining the simulation parameters in configuration.txt.   
+The **Crank-Nicolson method** is an implicit finite difference scheme that is unconditionally stable, meaning the numerical solution won’t blow up. However, stability alone doesn’t guarantee a physically meaningful solution, especially when advection is involved. The value of accuracy factors (r_diff and r_adv) can serve as guidelines for the user in defining the simulation parameters in [configuration.txt](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/configuration.txt).   
 
 The inital distribution of matter is modeled as a Gaussian pulse:
 
@@ -66,7 +66,6 @@ where A and B are tridiagnol matrices of size **nx X nx** with Dirichlet boundar
   <img src="https://github.com/user-attachments/assets/1bc51c0d-1915-48f6-abb6-44c7cf95c0e3" alt="Your Image">
 </p>
 ___
-
 ## Analytical Solution 
 
 The 1D Advection-Diffusion equation can be solved analytically by summing over a series of mirrored Gaussian pulses. The solution is expressed as:
