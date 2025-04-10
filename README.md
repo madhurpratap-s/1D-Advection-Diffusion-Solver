@@ -59,7 +59,7 @@ The equation can also be written in matrix form as:
 where A and B are tridiagnol matrices of size **nx X nx** with Dirichlet boundary conditions applied: 
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/05410a2d-d347-403f-9efa-79f0de9cc97c" alt="Your Image" width="50%">
+  <img src="https://github.com/user-attachments/assets/05410a2d-d347-403f-9efa-79f0de9cc97c" alt="Your Image" style="max-width: 400px; width: 100%;">
 </p>
 
 <p align="center">
