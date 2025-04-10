@@ -40,17 +40,17 @@ The spatial domain [0, L] and time domain [0, T] are divided into nx grid points
 
 with the coefficients:
 
-a_c = 1 + r_diff  
-a_l = -0.5 r_diff - 0.25 r_adv  
-a_u = -0.5 r_diff + 0.25 r_adv  
-b_c = 1 - r_diff  
-b_l = 0.5 r_diff + 0.25 r_adv  
-b_u = 0.5 r_diff - 0.25 r_adv
+- \( a_c = 1 + r_{\text{diff}} \)
+- \( a_l = -0.5 \cdot r_{\text{diff}} - 0.25 \cdot r_{\text{adv}} \)
+- \( a_u = -0.5 \cdot r_{\text{diff}} + 0.25 \cdot r_{\text{adv}} \)
+- \( b_c = 1 - r_{\text{diff}} \)
+- \( b_l = 0.5 \cdot r_{\text{diff}} + 0.25 \cdot r_{\text{adv}} \)
+- \( b_u = 0.5 \cdot r_{\text{diff}} - 0.25 \cdot r_{\text{adv}} \)
 
 and the accuracy factors:
 
-r_diff = D * dt / dx²  
-r_adv = v * dt / dx
+- \( r_{\text{diff}} = \frac{D \cdot \Delta t}{\Delta x^2} \)
+- \( r_{\text{adv}} = \frac{v \cdot \Delta t}{\Delta x} \)
 
 The equation can also be written in matrix form as:
 
@@ -86,7 +86,7 @@ Where:
 **𝑡** is the time.
 **𝑥₀** is the initial center of the Gaussian pulse.
 
-The term **2m𝐿** accounts for the mirrored reflections across the boundaries.
+The term **2n𝐿** accounts for the mirrored reflections across the boundaries.
 ___
 
 # Project Execution and Structure 
