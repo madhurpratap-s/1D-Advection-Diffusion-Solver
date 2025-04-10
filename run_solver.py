@@ -16,14 +16,16 @@ def process_configuration_file(config_file):
     Reads and processes the configuration file for 1-D Advection-Diffusion solver.
 
     Args:
-        config_file (str): The path to the configuration file in INI format. The file should contain the following sections:
+        config_file (str): The path or name of the configuration file in INI format. 
+        If the file is in the same directory as the Python script, the file name is sufficient. 
+        The file should contain the following sections:
             
             - [simulation_paramters]: Contains the simulation parameters.
                 - length (float): Length of the spatial domain.
                 - nx (int): Number of spatial discretization points.
                 - total time (float): Total time for the simulation.
                 - nt (int): Number of time steps for the simulation.
-                - alpha (float): Diffusivity coefficient.
+                - D (float): Diffusivity coefficient.
                 - velocity (float): Advection velocity.
                 - x0 (float, optional): Initial center of the Gaussian pulse. Defaults to length / 3.
                 - sigma (float, optional): Standard deviation of the initial Gaussian pulse. Defaults to length / 10.
@@ -38,7 +40,7 @@ def process_configuration_file(config_file):
         2. Calculates and checks if the accuracy factors r_diff and r_adv meet accuracy guidelines.
         3. Computes both numerical and analytical solutions based on the provided parameters.
         4. Saves the computed solutions to the specified paths.
-        5. Plots the 1D solutions of numerical and analytical methods together for comparison.
+        5. Plots the 1D solutions of numerical and analytical methods with time together for comparison.
         6. Creates a 3D surface plot of the numerical solution over space and time.   
         
     Warns:
