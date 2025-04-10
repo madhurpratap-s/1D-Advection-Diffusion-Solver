@@ -3,7 +3,7 @@
 The 1-D advection-diffusion equation is a parabolic partial differential equation that is given by:
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/a219c50c-36a2-4acf-857f-78bad7f78b3b" alt="Your Image">
+  <img src="https://github.com/user-attachments/assets/c21ece9a-71d2-4ec7-8bae-0263048948dd" alt="Your Image">
 </p>
 
 where:
@@ -21,13 +21,13 @@ The **Crank-Nicolson method** is an implicit finite difference scheme that is un
 The inital distribution of matter is modeled as a Gaussian pulse:
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/a8e2fc98-99b8-4755-b3f9-29ebb1393be3" alt="Your Image">
+  <img src="https://github.com/user-attachments/assets/02c713d8-1864-4da4-91ad-01988544d2eb" alt="Your Image">
 </p>
 
 Homogeneous Dirichlet boundary conditions are applied which enforce: 
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/ce756ad6-e50c-4c46-b293-ff9f1b0ba30c" alt="Your Image">
+  <img src="https://github.com/user-attachments/assets/df167b36-6706-442a-b3be-79715a50d331" alt="Your Image">
 </p>
 
 Physically, this means that the concentration of matter that is being transported is **fixed at zero** at both ends of the domain for all times.
@@ -35,7 +35,7 @@ Physically, this means that the concentration of matter that is being transporte
 The spatial domain [0, L] and time domain [0, T] are divided into nx grid points and nx time steps respectively and then corresponding step sizes dx and dt are calculated. The discretization of the 1D advection-diffusion equation using the Crank-Nicolson method is then given as:
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/379c4acb-b35e-4cdb-aea9-92e766f95ad6" alt="Your Image">
+  <img src="https://github.com/user-attachments/assets/8e8b809c-101c-4024-bb8f-12fdaff727f6" alt="Your Image">
 </p>
 
 with the coefficients:
@@ -55,33 +55,17 @@ r_adv = v * dt / dx
 The equation can also be written in matrix form as:
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/c5137e32-98ea-4887-8376-8592691a880c" alt="Your Image">
+  <img src="https://github.com/user-attachments/assets/7b26da2a-1573-4c20-86dd-e71ffc0724c8" alt="Your Image">
 </p>
 
 where A and B are tridiagnol matrices of size **nx X nx** with Dirichlet boundary conditions applied: 
 
-### Matrix A:
-a_c	a_u	0	...	0
-a_l	a_c	a_u	...	0
-0	a_l	a_c	...	0
-...	...	...	...	...
-0	0	0	...	a_c
-0	0	0	...	a_l
-
-### Matrix B:
-b_c	b_u	0	...	0
-b_l	b_c	b_u	...	0
-0	b_l	b_c	...	0
-...	...	...	...	...
-0	0	0	...	b_c
-0	0	0	...	b_l
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/f7956758-5dfb-4880-afcc-90bb6fbbf186" alt="Your Image">
+ align="center">
+  <img src="https://github.com/user-attachments/assets/05410a2d-d347-403f-9efa-79f0de9cc97c" alt="Your Image">
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/9310458a-57d7-4f35-8b2a-bc4a8197052b" alt="Your Image">
+  <img src="https://github.com/user-attachments/assets/1bc51c0d-1915-48f6-abb6-44c7cf95c0e3" alt="Your Image">
 </p>
 ___
 
@@ -90,7 +74,7 @@ ___
 The 1D Advection-Diffusion equation can be solved analytically by summing over a series of mirrored Gaussian pulses. The solution is expressed as:
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/1dfec78b-7f25-4907-8fb5-e28b2b7ecb72" alt="Your Image">
+  <img src="https://github.com/user-attachments/assets/44642763-139c-4010-af06-a4c1ae0df149" alt="Your Image">
 </p>
 
 Where:
