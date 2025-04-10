@@ -189,8 +189,12 @@ def solve_advection_diffusion_CN(L, T, nx, nt, D, velocity, x0, sigma):
 
 def solve_advection_diffusion_analytical(L, T, nx, nt, D, velocity, x0, sigma, num_reflections = 5):
     """
-    Solves the 1D advection-diffusion equation analytically for a finite domain.
+    Solves the 1D advection-diffusion equation using the gaussian mirror method based on the analytical solution.
 
+    While the method leverages the analytical solution, it includes a numerical component 
+    necessary for practical implementation. This component allows for plotting and comparing 
+    the results with numerical methods like the Crank-Nicolson method.
+    
     The solution is given by summing over mirrored Gaussians:
 
         u(x,t) = Σ (sigma / sqrt(sigma^2 + 2*D*t)) * exp( - (x - (x0 + velocity*t) - 2nL)^2 / (2*(sigma^2+2*D*t)) )
