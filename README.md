@@ -40,13 +40,13 @@ The spatial domain [0, L] and time domain [0, T] are divided into nx grid points
 
 with the coefficients:
 
-<p align="center">
+<p align="left">
   <img src="https://github.com/user-attachments/assets/3fa41534-fa45-4a0f-96aa-c81b47d84af9" alt="Your Image">
 </p>
 
 and the accuracy factors:
 
-<p align="center">
+<p align="left">
   <img src="https://github.com/user-attachments/assets/275ed9bf-c7f4-4387-be9c-093fa9c84e65" alt="Your Image">
 </p>
 
