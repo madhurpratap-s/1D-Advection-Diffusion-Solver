@@ -32,7 +32,7 @@ Homogeneous Dirichlet boundary conditions are applied which enforce:
 
 Physically, this means that the concentration of matter that is being transported is **fixed at zero** at both ends of the domain for all times.
 
-The spatial domain [0, L] and time domain [0, T] are divided into nx grid points and nx time steps respectively and then corresponding step sizes dx and dt are calculated. The discretization of the 1D advection-diffusion equation using the Crank-Nicolson method is then given as:
+The spatial domain [0, L] and time domain [0, T] are divided into nx grid points and nt time steps respectively and then corresponding step sizes dx and dt are calculated. The discretization of the 1D advection-diffusion equation using the Crank-Nicolson method is then given as:
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/8e8b809c-101c-4024-bb8f-12fdaff727f6" alt="Your Image">
@@ -59,11 +59,11 @@ The equation can also be written in matrix form as:
 where A and B are tridiagnol matrices of size **nx X nx** with Dirichlet boundary conditions applied: 
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/05410a2d-d347-403f-9efa-79f0de9cc97c" alt="Your Image" style="max-width: 400px; width: 25%;">
+  <img src="https://github.com/user-attachments/assets/3454390e-1f6f-4f06-a288-48471f9ee4e5" alt="Your Image" style="max-width: 400px; width: 25%;">
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/1bc51c0d-1915-48f6-abb6-44c7cf95c0e3" alt="Your Image" style="max-width: 400px; width: 25%;">
+  <img src="https://github.com/user-attachments/assets/d1207c38-d6c2-4048-8032-7852fef6d7c2" alt="Your Image" style="max-width: 400px; width: 25%;">
 </p>
 
 ## Analytical Solution 
@@ -95,7 +95,7 @@ These are the steps to be followed to execute the program and get plotted result
 
 This is how I divided the project into blocks:
 
-- In [functions.py](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/functions.py), I have built the functions needed for calculating discretization, calculating and checking accuracy factors as per guidelines, setting up inital gaussian pulse, creating matrices for C-N method, applying homogeneous dirichlet boundary conditions and solving the 1-D Advection-Diffusion equation numerically using the Crank-Nicolson method and analytically by summing over a series of mirrored Gaussian pulses.
+- In [functions.py](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/functions.py), I have built the functions needed for calculating discretization (spatial and temporal step sizes), calculating and checking accuracy factors as per guidelines, setting up inital gaussian pulse, creating matrices for C-N method, applying homogeneous dirichlet boundary conditions to the matrices and solving the 1-D Advection-Diffusion equation numerically using the Crank-Nicolson method and analytically by summing over a series of mirrored Gaussian pulses.
 - In [testing.py](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/testing.py), I have tested all the functions in functions.py to ensure that they work as expected.
 - In [configuration.txt](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/configuration.txt), I have pre-defined the simulation parameters needed for the program to run as well as the local paths where the numerical and analytical solution will be saved.
 - In [run_solver.py](https://github.com/madhurpratap-s/1D-Advection-Diffusion-Solver/blob/main/run_solver.py), this is the heart of the project that needs to be executed by the user. Here, the simulation parameters are extracted from the chosen configuration file, accuracy conditions are checked, and both numerical and analytical solutions are computed and saved. In the end, a 1D comparison plot and a 3D surface plot of the numerical solution are generated.
