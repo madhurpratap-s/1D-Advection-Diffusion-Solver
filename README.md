@@ -40,17 +40,15 @@ The spatial domain [0, L] and time domain [0, T] are divided into nx grid points
 
 with the coefficients:
 
-- \( a_c = 1 + r_{\text{diff}} \)
-- \( a_l = -0.5 \cdot r_{\text{diff}} - 0.25 \cdot r_{\text{adv}} \)
-- \( a_u = -0.5 \cdot r_{\text{diff}} + 0.25 \cdot r_{\text{adv}} \)
-- \( b_c = 1 - r_{\text{diff}} \)
-- \( b_l = 0.5 \cdot r_{\text{diff}} + 0.25 \cdot r_{\text{adv}} \)
-- \( b_u = 0.5 \cdot r_{\text{diff}} - 0.25 \cdot r_{\text{adv}} \)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/3fa41534-fa45-4a0f-96aa-c81b47d84af9" alt="Your Image">
+</p>
 
 and the accuracy factors:
 
-- \( r_{\text{diff}} = \frac{D \cdot \Delta t}{\Delta x^2} \)
-- \( r_{\text{adv}} = \frac{v \cdot \Delta t}{\Delta x} \)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/275ed9bf-c7f4-4387-be9c-093fa9c84e65" alt="Your Image">
+</p>
 
 The equation can also be written in matrix form as:
 
