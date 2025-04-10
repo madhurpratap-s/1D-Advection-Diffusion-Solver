@@ -59,16 +59,17 @@ The equation can also be written in matrix form as:
 where A and B are tridiagnol matrices of size **nx X nx** with Dirichlet boundary conditions applied: 
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/3454390e-1f6f-4f06-a288-48471f9ee4e5" alt="Your Image" style="max-width: 400px; width: 25%;">
+  <img src="https://github.com/user-attachments/assets/0de2bab5-c5a1-44f1-9f0d-d69c31d5ff9f" alt="Your Image" style="max-width: 400px; width: 25%;">
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/d1207c38-d6c2-4048-8032-7852fef6d7c2" alt="Your Image" style="max-width: 400px; width: 25%;">
+  <img src="https://github.com/user-attachments/assets/82ee3b7f-f201-4fb3-ac1b-e764eb5aef31" alt="Your Image" style="max-width: 400px; width: 25%;">
 </p>
 
 ## Analytical Solution 
 
-The 1D Advection-Diffusion equation can be solved analytically by summing over a series of mirrored Gaussian pulses. The solution is expressed as:
+The 1D Advection-Diffusion equation can be solved analytically by summing over a series of mirrored Gaussian pulses. While this technique is based on the analytical solution, it incorporates a numerical component for practical implementation. This numerical aspect is necessary, as it enables the plotting and comparison of results between the Crank-Nicolson method and the Gaussian mirror method.
+The solution is expressed as:
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/44642763-139c-4010-af06-a4c1ae0df149" alt="Your Image">
